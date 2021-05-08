@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Raylib-cs">
+      <HintPath>..\..\Users\jribi\Downloads\Raylib-cs-master\Raylib-cs-master\Raylib-cs\bin\Debug\netstandard2.1\Raylib-cs.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
