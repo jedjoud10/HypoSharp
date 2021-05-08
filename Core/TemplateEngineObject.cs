@@ -22,11 +22,11 @@ namespace HypoSharp.Core
         }
 
         /// <summary>
-        /// The frame method is ran every frame
+        /// The main game Loop called before rendering this EngineEntity
         /// </summary>
-        public override void Frame(float delta)
+        public override void Loop(float delta)
         {
-            base.Frame(delta);
+            base.Loop(delta);
         }
 
         /// <summary>

@@ -14,9 +14,19 @@ namespace HypoSharp.Core.Primitives
     public abstract class Shape : EngineEntity
     {
         //Main shape vars
-        public Color color;
-        public Model model;
-        public Mesh mesh;
+        public ModelRenderer Renderer { get; set; }
+        public Quaternion Rotation 
+        { 
+            get 
+            {
+                return base.Rotation;
+            }
+            set 
+            {
+                base.Rotation = value;
+                Renderer.Rotation = base.Rotation;
+            } 
+        } 
 
         /// <summary>
         /// Primitive shape constructor
@@ -26,15 +36,15 @@ namespace HypoSharp.Core.Primitives
         /// <param name="color">Color of the shape</param>
         public Shape(Vector3 position, Quaternion rotation, Color color) : base(position, rotation)
         {
-            this.color = color;
+        
         }
 
         /// <summary>
-        /// Render the entity every frame
+        /// The main game Loop called before rendering this EngineEntity
         /// </summary>
-        public override void Frame(float delta)
+        public override void Loop(float delta)
         {
-            base.Frame(delta);
+            base.Loop(delta);
         }
 
         /// <summary>
@@ -42,9 +52,7 @@ namespace HypoSharp.Core.Primitives
         /// </summary>
         public override void Render()
         {
-            base.Render();
-            model.transform = Matrix4x4.CreateFromQuaternion(rotation);
-            Raylib.DrawModel(model, position, 1, color);
+            base.Render();            
         }
     }
 }

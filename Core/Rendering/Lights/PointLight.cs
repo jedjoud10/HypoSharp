@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Raylib_cs;
 
-namespace HypoSharp.Core
-{
+namespace HypoSharp.Core.Rendering
+{    
     /// <summary>
-    /// A EngineEntity template
+    /// A point light used in rendering
     /// </summary>
-    public class TemplateEngineEntity : EngineEntity
+    public class PointLight : EngineObject
     {
         /// <summary>
         /// Initialization method
@@ -27,14 +27,7 @@ namespace HypoSharp.Core
         public override void Loop(float delta)
         {
             base.Loop(delta);
-        }
-
-        /// <summary>
-        /// Render this specific EngineEntity
-        /// </summary>
-        public override void Render()
-        {
-            base.Render();
+            
         }
 
         /// <summary>
@@ -44,5 +37,5 @@ namespace HypoSharp.Core
         {
             base.Dispose();
         }
-    }
+    }    
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Raylib_cs;
 using System.Numerics;
+using HypoSharp.Rendering;
 
 namespace HypoSharp.Core
 {
@@ -14,7 +15,7 @@ namespace HypoSharp.Core
     public static class World
     {
         //Main world vars
-        public static Camera3D camera;
+        public static Camera Camera { get; set; }
         private static List<EngineObject> objects;
         private static float deltaTime;
         public static event Action OnInitializeWorld;
@@ -25,9 +26,8 @@ namespace HypoSharp.Core
         public static void InitializeWorld() 
         {
             objects = new List<EngineObject>();
-            camera = new Camera3D(new Vector3(0, 30, -100), Vector3.Zero, Vector3.UnitY, 60, CameraType.CAMERA_PERSPECTIVE);            
-            Raylib.SetCameraMode(camera, CameraMode.CAMERA_CUSTOM);
             OnInitializeWorld?.Invoke();
+            foreach (var currentObject in objects) currentObject.Initialize();
         }
 
         /// <summary>
@@ -56,15 +56,14 @@ namespace HypoSharp.Core
         {
             //Update camera
             Raylib.DisableCursor();
-            Raylib.UpdateCamera(ref camera);
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.WHITE);
-            Raylib.BeginMode3D(camera);
+
             deltaTime = Raylib.GetFrameTime();
 
             //Call the frame function on each object
-            foreach (var currentObject in objects) currentObject.Frame(deltaTime);
+            foreach (var currentObject in objects) currentObject.Loop(deltaTime);
 
             Raylib.DrawGrid(50, 10);
             Raylib.EndMode3D();

@@ -11,7 +11,7 @@ namespace HypoSharp.Core
     /// <summary>
     /// An object that is in the World, it has multiple events that are subscribed to raylib events
     /// </summary>
-    public class EngineObject
+    public abstract class EngineObject
     {
         /// <summary>
         /// Initialization method
@@ -28,10 +28,10 @@ namespace HypoSharp.Core
         }        
 
         /// <summary>
-        /// The frame method is ran every frame
+        /// The Loop method is ran every frame, before rendering
         /// </summary>
         /// <param name="delta">How much time passed since last frame</param>
-        public virtual void Frame(float delta) 
+        public virtual void Loop(float delta) 
         {
         }
 

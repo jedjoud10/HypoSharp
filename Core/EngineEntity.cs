@@ -11,11 +11,11 @@ namespace HypoSharp.Core
     /// <summary>
     /// A 3D object in the world, could be a cube or even the player
     /// </summary>
-    public class EngineEntity : EngineObject
+    public abstract class EngineEntity : EngineObject
     {
         //Main vars
-        public Vector3 position;
-        public Quaternion rotation;
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
 
         /// <summary>
         /// Constructor for this entity
@@ -24,16 +24,16 @@ namespace HypoSharp.Core
         /// <param name="rotation">Rotation (Quaternion) for this entity. Default is (0, 0, 0, 0)</param>
         public EngineEntity(Vector3 position = new Vector3(), Quaternion rotation = new Quaternion()) 
         {
-            this.position = position;
-            this.rotation = rotation;
+            this.Position = position;
+            this.Rotation = rotation;
         }
 
         /// <summary>
         /// Render the entity every frame
         /// </summary>
-        public override void Frame(float delta)
+        public override void Loop(float delta)
         {
-            base.Frame(delta);
+            base.Loop(delta);
             Render();
         }
 
@@ -43,5 +43,7 @@ namespace HypoSharp.Core
         public virtual void Render()
         {
         }
+
+        
     }
 }

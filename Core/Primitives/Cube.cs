@@ -23,8 +23,7 @@ namespace HypoSharp.Core.Primitives
                 size = value;
 
                 //Update mesh
-                mesh = Raylib.GenMeshCube(size.X, size.Y, size.Z);
-                model = Raylib.LoadModelFromMesh(mesh);
+                Renderer.Model = Raylib.LoadModelFromMesh(Raylib.GenMeshCube(size.X, size.Y, size.Z));
             }
         }
 
@@ -36,16 +35,20 @@ namespace HypoSharp.Core.Primitives
         /// <param name="color">Color of this cube</param>
         public Cube(Vector3 position, Quaternion rotation, Color color, Vector3 size) : base(position, rotation, color)
         {
-            mesh = Raylib.GenMeshCube(size.X, size.Y, size.Z);
-            model = Raylib.LoadModelFromMesh(mesh);
+            Renderer = new ModelRenderer();
+            Renderer.Position = position;
+            Renderer.Rotation = rotation;
+            Renderer.Scale = 1;
+            Renderer.Tint = color;
+            Renderer.Model = Raylib.LoadModelFromMesh(Raylib.GenMeshCube(size.X, size.Y, size.Z));
         }
 
         /// <summary>
-        /// Render the entity every frame
+        /// The main game Loop called before rendering this EngineEntity
         /// </summary>
-        public override void Frame(float delta)
+        public override void Loop(float delta)
         {
-            base.Frame(delta);
+            base.Loop(delta);
         }
 
         /// <summary>
@@ -53,7 +56,8 @@ namespace HypoSharp.Core.Primitives
         /// </summary>
         public override void Render()
         {
-            base.Render();            
+            base.Render();
+            Renderer.RenderModel();
         }
     }
 }
