@@ -36,11 +36,11 @@ namespace HypoSharp.Core.Primitives
         public Cube(Vector3 position, Quaternion rotation, Color color, Vector3 size) : base(position, rotation, color)
         {
             Renderer = new ModelRenderer();
+            Renderer.Model = Raylib.LoadModelFromMesh(Raylib.GenMeshCube(size.X, size.Y, size.Z));
             Renderer.Position = position;
             Renderer.Rotation = rotation;
             Renderer.Scale = 1;
             Renderer.Tint = color;
-            Renderer.Model = Raylib.LoadModelFromMesh(Raylib.GenMeshCube(size.X, size.Y, size.Z));
         }
 
         /// <summary>

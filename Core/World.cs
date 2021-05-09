@@ -62,8 +62,10 @@ namespace HypoSharp.Core
 
             deltaTime = Raylib.GetFrameTime();
 
-            //Call the frame function on each object
+            //Call the loop method each object
             foreach (var currentObject in objects) currentObject.Loop(deltaTime);
+
+
 
             Raylib.DrawGrid(50, 10);
             Raylib.EndMode3D();
@@ -71,6 +73,7 @@ namespace HypoSharp.Core
             //Draw fps
             Raylib.DrawText($"FPS: {Raylib.GetFPS()}", 12, 12, 20, Color.BLACK);
             Raylib.DrawText($"DELTA: {deltaTime}", 12, 32, 20, Color.BLACK);
+            Raylib.DrawText($"CAM POS: {Camera.Position.ToString("0.0")}", 12, 52, 20, Color.BLACK);
 
             Raylib.EndDrawing();
         }

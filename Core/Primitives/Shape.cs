@@ -17,10 +17,7 @@ namespace HypoSharp.Core.Primitives
         public ModelRenderer Renderer { get; set; }
         public Quaternion Rotation 
         { 
-            get 
-            {
-                return base.Rotation;
-            }
+            get { return base.Rotation; }
             set 
             {
                 base.Rotation = value;
