@@ -38,8 +38,10 @@ namespace HypoSharp.Core
         /// <summary>
         /// Renders a specific model with a position, rotation and scale (Tint is optional)
         /// </summary>
+        /// 
         public void RenderModel()
         {
+            Raylib.BeginTextureMode
             Raylib.DrawModel(Model, Position, Scale, Tint);
         }
     }    

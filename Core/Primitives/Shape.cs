@@ -11,7 +11,7 @@ namespace HypoSharp.Core.Primitives
     /// <summary>
     /// A Primitive shape
     /// </summary>
-    public abstract class Shape : EngineEntity
+    public abstract class Shape : BaseComponents
     {
         //Main shape vars
         public ModelRenderer Renderer { get; set; }

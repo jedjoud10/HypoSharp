@@ -11,7 +11,7 @@ namespace HypoSharp.Core
     /// <summary>
     /// An object that is in the World, it has multiple events that are subscribed to raylib events
     /// </summary>
-    public abstract class EngineObject
+    public abstract class EngineEntity
     {
         /// <summary>
         /// Initialization method

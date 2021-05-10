@@ -12,7 +12,7 @@ namespace HypoSharp.Rendering
     /// <summary>
     /// A Camera object
     /// </summary>
-    public class Camera : EngineEntity
+    public class Camera : BaseComponents
     {
         //Main camera vars
         private Camera3D camera3D;
