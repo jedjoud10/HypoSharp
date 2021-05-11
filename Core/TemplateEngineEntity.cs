@@ -1,48 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Raylib_cs;
+﻿using System.Numerics;
 
 namespace HypoSharp.Core
 {
-    /// <summary>
-    /// A EngineEntity template
-    /// </summary>
-    public class TemplateEngineEntity : EngineEntity
+    public class TemplateEngineEntity : IGameLogic, ITransform, IRenderable, ITickable
     {
+        //ITransform implementations
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+
         /// <summary>
         /// Initialization method
         /// </summary>
-        public override void Initialize()
+        public void Initialize()
         {
-            base.Initialize();
+
+        }
+
+        /// <summary>
+        /// The tick method is ran a predefined amount per second
+        /// </summary>
+        public void Tick()
+        {
+
         }
 
         /// <summary>
         /// The main game Loop called before rendering this EngineEntity
         /// </summary>
-        public override void Loop(float delta)
+        public void Loop(float delta)
         {
-            base.Loop(delta);
+
         }
 
         /// <summary>
-        /// Render this specific EngineEntity
+        /// Render this object
         /// </summary>
-        public override void Render()
+        public void Render()
         {
-            base.Render();
+
         }
 
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
+
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using Raylib_cs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using HypoSharp.Core;
+﻿using HypoSharp.Core;
+using HypoSharp.Core.Primitives;
 using HypoSharp.Rendering;
+using Raylib_cs;
+using System;
+using System.Numerics;
 
 namespace HypoSharp.Debug
 {
@@ -19,9 +16,9 @@ namespace HypoSharp.Debug
         public const float defaultSensivity = 0.04f;
         public float Speed { get; set; }
         public float Sensivity { get; set; }
-        private Vector2 mouseDelta;
-        private Vector2 lastMousePosition;
-        private Vector2 summedDelta;
+        private Vector2 _mouseDelta;
+        private Vector2 _lastMousePosition;
+        private Vector2 _summedDelta;
 
         /// <summary>
         /// Debug camera constructor
@@ -36,24 +33,9 @@ namespace HypoSharp.Debug
         }
 
         /// <summary>
-        /// Initialization method
+        /// The Loop method is ran every frame, before rendering
         /// </summary>
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
-        /// <summary>
-        /// The tick method is ran a predefined amount per second
-        /// </summary>
-        public override void Tick()
-        {
-            base.Tick();
-        }
-
-        /// <summary>
-        /// The main game Loop called before rendering this EngineEntity
-        /// </summary>
+        /// <param name="delta">How much time passed since last frame</param>
         public override void Loop(float delta)
         {
             //Movement
@@ -64,28 +46,15 @@ namespace HypoSharp.Debug
 
             //Rotation
             Vector2 mousePos = Raylib.GetMousePosition();
-            mouseDelta = mousePos - lastMousePosition;
-            summedDelta += mouseDelta * Sensivity;
-            summedDelta.Y = Math.Clamp(summedDelta.Y, -90, 90);
-            Rotation = Quaternion.CreateFromYawPitchRoll(-summedDelta.X * (MathF.PI / 180), summedDelta.Y * (MathF.PI / 180), 0);
-            lastMousePosition = mousePos;
+            _mouseDelta = mousePos - _lastMousePosition;
+            _summedDelta += _mouseDelta * Sensivity;
+            _summedDelta.Y = Math.Clamp(_summedDelta.Y, -90, 90);
+            Rotation = Quaternion.CreateFromYawPitchRoll(-_summedDelta.X * (MathF.PI / 180), _summedDelta.Y * (MathF.PI / 180), 0);
+            _lastMousePosition = mousePos;
+
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON)) World.AddObject(new Cube(Forward * 100 + Position, Quaternion.CreateFromYawPitchRoll(45, 0, 0), Color.BLUE, Vector3.One * 10));
+
             base.Loop(delta);
-        }
-
-        /// <summary>
-        /// Render this specific EngineEntity
-        /// </summary>
-        public override void Render()
-        {
-            base.Render();
-        }
-
-        /// <summary>
-        /// Called when this object is getting disposed of
-        /// </summary>
-        public override void Dispose()
-        {
-            base.Dispose();
         }
     }
 }

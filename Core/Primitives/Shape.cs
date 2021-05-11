@@ -1,29 +1,20 @@
 ﻿using Raylib_cs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HypoSharp.Core.Primitives
 {
     /// <summary>
     /// A Primitive shape
     /// </summary>
-    public abstract class Shape : BaseComponents
+    public abstract class Shape : ITransform, IRenderable
     {
+        //ITransform implementations
+        private Quaternion _rotation; private Vector3 _position;
+        public Vector3 Position { get { return _position; } set { _position = value; Renderer.Position = _position; } }
+        public Quaternion Rotation { get { return _rotation; } set { _rotation = value; Renderer.Rotation = _rotation; } }
+
         //Main shape vars
         public ModelRenderer Renderer { get; set; }
-        public Quaternion Rotation 
-        { 
-            get { return base.Rotation; }
-            set 
-            {
-                base.Rotation = value;
-                Renderer.Rotation = base.Rotation;
-            } 
-        } 
 
         /// <summary>
         /// Primitive shape constructor
@@ -31,25 +22,21 @@ namespace HypoSharp.Core.Primitives
         /// <param name="position">Position for this entity. Default is (0, 0, 0)</param>
         /// <param name="rotation">Rotation (Quaternion) for this entity. Default is (0, 0, 0, 0)</param>
         /// <param name="color">Color of the shape</param>
-        public Shape(Vector3 position, Quaternion rotation, Color color) : base(position, rotation)
+        public Shape(Vector3 position, Quaternion rotation, Color color)
         {
-        
-        }
-
-        /// <summary>
-        /// The main game Loop called before rendering this EngineEntity
-        /// </summary>
-        public override void Loop(float delta)
-        {
-            base.Loop(delta);
+            Renderer = new ModelRenderer();
+            Position = position;
+            Rotation = rotation;
+            Renderer.Tint = color;
+            Renderer.Scale = 1;
         }
 
         /// <summary>
         /// Render this specific EngineEntity
         /// </summary>
-        public override void Render()
+        public virtual void Render()
         {
-            base.Render();            
+            Renderer.RenderModel();
         }
     }
 }

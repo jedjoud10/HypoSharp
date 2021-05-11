@@ -1,72 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HypoSharp.Core;
 using Raylib_cs;
-using HypoSharp.Core;
+using System;
+using System.Numerics;
 
 namespace HypoSharp.Rendering
-{    
+{
     /// <summary>
     /// A Camera object
     /// </summary>
-    public class Camera : BaseComponents
+    public class Camera : IGameLogic, ITransform
     {
+        //ITransform implementations
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+
         //Main camera vars
-        private Camera3D camera3D;
-        public Camera3D Camera3D { get { return camera3D; } set { camera3D = value; } }
+        private float _fov;
+        private Camera3D _camera3D;
+        public Camera3D Camera3D { get { return _camera3D; } set { _camera3D = value; } }
+        public Vector3 Up { get; set; }
+        public Vector3 Forward { get; set; }
+        public Vector3 Left { get; set; }
 
         /// <summary>
         /// Camera constructor
         /// </summary>
         /// <param name="fov">Field of View (Horizontal) of this camera. Defaults to 90</param>
-        public Camera(float fov = 60) 
+        public Camera(float fov = 60)
         {
-            //https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/
-            float verticalFov = Math.Abs((float)(2 * Math.Atan(Math.Tan((fov * (Math.PI / 180f)) / 2) * ((float)Raylib.GetScreenWidth() / (float)Raylib.GetScreenHeight()))));
-            Console.Write(verticalFov);
-            Camera3D = new Camera3D(Position, Vector3.Zero, Vector3.UnitY, verticalFov * (180f / MathF.PI), CameraType.CAMERA_PERSPECTIVE);
+            this._fov = fov;
         }
 
         /// <summary>
         /// Initialization method
         /// </summary>
-        public override void Initialize()
+        public void Initialize()
         {
-            base.Initialize();
-            Position = new Vector3(0, 30, -100);            
+            Position = new Vector3(0, 30, -100);
+            //https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/
+            float verticalFov = Math.Abs((float)(2 * Math.Atan(Math.Tan((_fov * (Math.PI / 180f)) / 2) * ((float)Raylib.GetScreenWidth() / (float)Raylib.GetScreenHeight()))));
+            Camera3D = new Camera3D(Position, Vector3.Zero, Vector3.UnitY, verticalFov * (180f / MathF.PI), CameraType.CAMERA_PERSPECTIVE);
             Raylib.SetCameraMode(Camera3D, CameraMode.CAMERA_CUSTOM);
         }
 
         /// <summary>
-        /// The main game Loop called before rendering this EngineEntity
+        /// The Loop method is ran every frame, before rendering
         /// </summary>
-        public override void Loop(float delta)
+        /// <param name="delta">How much time passed since last frame</param>
+        public virtual void Loop(float delta)
         {
-            camera3D.position = Position;
-            camera3D.up = Vector3.Transform(Vector3.UnitY, Rotation);
-            camera3D.target = Vector3.Transform(Vector3.UnitZ, Rotation) + Position;
-            base.Loop(delta);
-        }
-
-        /// <summary>
-        /// Render this specific EngineEntity
-        /// </summary>
-        public override void Render()
-        {            
-            base.Render();
-            Raylib.UpdateCamera(ref camera3D);
-            Raylib.BeginMode3D(camera3D);
+            Forward = Vector3.Transform(Vector3.UnitZ, Rotation);
+            Up = _camera3D.up;
+            Left = Vector3.Transform(Vector3.UnitX, Rotation);
+            _camera3D.position = Position;
+            _camera3D.up = Vector3.Transform(Vector3.UnitY, Rotation);
+            _camera3D.target = Forward + Position;
+            Raylib.UpdateCamera(ref _camera3D);
+            Raylib.BeginMode3D(_camera3D);
         }
 
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
         }
-    }    
+    }
 }

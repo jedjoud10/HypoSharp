@@ -1,28 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Raylib_cs;
+﻿using System.Numerics;
 
 namespace HypoSharp.Core
 {
     /// <summary>
-    /// Transform component
+    /// Transform component, holds position and rotation of the object in space
     /// </summary>
     public interface ITransform
     {
         //Main vars
         public Vector3 Position { get; set; }
-        public Quaternion Rotation { get; set; }        
+        public Quaternion Rotation { get; set; }
+    }
+
+    public interface IGameLogic
+    {
+        /// <summary>
+        /// Initialization method
+        /// </summary>
+        public void Initialize();
+
+        /// <summary>
+        /// The Loop method is ran every frame, before rendering
+        /// </summary>
+        /// <param name="delta">How much time passed since last frame</param>
+        public void Loop(float delta);
+
+        /// <summary>
+        /// Called when this object is getting disposed of
+        /// </summary>
+        public void Dispose();
     }
 
     /// <summary>
-    /// Renderable component
+    /// Component that let's you add the tick event to the specific object
     /// </summary>
-    public interface IRenderable 
+    public interface ITickable
     {
-        
+        /// <summary>
+        /// Tick event
+        /// </summary>
+        public void Tick();
+    }
+
+    /// <summary>
+    /// Renderable component, tells the renderer that it can render this object
+    /// </summary>
+    public interface IRenderable
+    {
+        /// <summary>
+        /// Render this object
+        /// </summary>
+        public void Render();
     }
 }

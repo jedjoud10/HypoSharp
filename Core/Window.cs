@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-using HypoSharp.Core;
-using Raylib_cs;
+﻿using Raylib_cs;
 
 namespace HypoSharp.Core
 {
@@ -15,11 +10,11 @@ namespace HypoSharp.Core
         /// <summary>
         /// Main entry point for the game
         /// </summary>
-        public static void InitializeWindow(string title, int targetFps) 
+        public static void InitializeWindow(string title, int targetFps)
         {
             Raylib.SetConfigFlags(ConfigFlag.FLAG_WINDOW_RESIZABLE);
             Raylib.InitWindow(1280, 720, title);
-            if(targetFps > 1) Raylib.SetTargetFPS(targetFps);            
+            if (targetFps > 1) Raylib.SetTargetFPS(targetFps);
             World.InitializeWorld();
 
             //Main game loop
