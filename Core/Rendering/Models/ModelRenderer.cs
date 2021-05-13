@@ -10,9 +10,10 @@ namespace HypoSharp.Core
     {
         //Main Model vars
         private Model _model;
-        public Model Model { get { return _model; } set { _model = value; _model.transform = Transform; } }
+        public Model Model { get { return _model; } set { _model = value; _model.transform = Transform; OnLoadModel(); } }
         public Vector3 Position { get; set; }
-        public Matrix4x4 Transform { get; set; }
+        private Matrix4x4 _transform;
+        public Matrix4x4 Transform { get { return _transform; } set { _transform = value; _model.transform = value; } }
         private Quaternion _rotation;
         public Quaternion Rotation
         {
@@ -28,11 +29,28 @@ namespace HypoSharp.Core
         public Shader Shader { get; set; }
 
         /// <summary>
+        /// Load a specific model
+        /// </summary>
+        private unsafe void OnLoadModel() 
+        {
+            Shader shader = DeferredRenderer.Shader;
+            DeferredRenderer.SetMaterialShader(ref _model, 0, ref shader);
+        }
+
+        /// <summary>
         /// Renders a specific model with a position, rotation and scale (Tint is optional)
         /// </summary>
         public void RenderModel()
-        {
+        {            
             Raylib.DrawModel(Model, Position, Scale, Tint);
+        }
+
+        /// <summary>
+        /// Disposes a specific model
+        /// </summary>
+        public void DisposeModel() 
+        {
+            Raylib.UnloadModel(Model);
         }
     }
 }

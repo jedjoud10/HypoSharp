@@ -35,14 +35,13 @@ namespace HypoSharp.Debug
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        /// <param name="delta">How much time passed since last frame</param>
-        public override void Loop(float delta)
+        public override void Loop()
         {
             //Movement
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) Position += Vector3.Transform(Vector3.UnitZ, Rotation) * delta * Speed;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) Position += Vector3.Transform(Vector3.UnitX, Rotation) * delta * Speed;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) Position -= Vector3.Transform(Vector3.UnitZ, Rotation) * delta * Speed;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) Position -= Vector3.Transform(Vector3.UnitX, Rotation) * delta * Speed;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) Position += Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) Position += Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) Position -= Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) Position -= Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
 
             //Rotation
             Vector2 mousePos = Raylib.GetMousePosition();
@@ -54,7 +53,7 @@ namespace HypoSharp.Debug
 
             if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON)) World.AddObject(new Cube(Forward * 100 + Position, Quaternion.CreateFromYawPitchRoll(45, 0, 0), Color.BLUE, Vector3.One * 10));
 
-            base.Loop(delta);
+            base.Loop();
         }
     }
 }

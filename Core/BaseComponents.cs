@@ -22,8 +22,7 @@ namespace HypoSharp.Core
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        /// <param name="delta">How much time passed since last frame</param>
-        public void Loop(float delta);
+        public void Loop();
 
         /// <summary>
         /// Called when this object is getting disposed of

@@ -27,7 +27,7 @@ namespace HypoSharp.Core
         /// <summary>
         /// The main game Loop called before rendering this EngineEntity
         /// </summary>
-        public void Loop(float delta)
+        public void Loop()
         {
 
         }

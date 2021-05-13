@@ -6,7 +6,7 @@ namespace HypoSharp.Core.Primitives
     /// <summary>
     /// A Primitive shape
     /// </summary>
-    public abstract class Shape : ITransform, IRenderable
+    public abstract class Shape : ITransform, IGameLogic, IRenderable
     {
         //ITransform implementations
         private Quaternion _rotation; private Vector3 _position;
@@ -37,6 +37,20 @@ namespace HypoSharp.Core.Primitives
         public virtual void Render()
         {
             Renderer.RenderModel();
+        }
+
+        public void Initialize()
+        {
+        }
+
+        public void Loop()
+        {
+            Rotation = Quaternion.CreateFromYawPitchRoll(Time.TimeSinceGameStart, 0, 0);
+        }
+
+        public void Dispose()
+        {
+            Renderer.DisposeModel();
         }
     }
 }

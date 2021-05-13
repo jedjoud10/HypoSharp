@@ -12,19 +12,25 @@ namespace HypoSharp.Core
     {
         //Main world vars
         public static Camera Camera { get; set; }
-        private static List<IGameLogic> _logicObjects;
-        private static List<IRenderable> _renderObjects;
+        public static DeferredRenderer Renderer { get; set; }
+        public static List<IGameLogic> LogicObjects { get; set; }
+        public static List<IRenderable> RenderObjects { get; set; }
+        private static List<object> ObjectsToAdd { get; set; }
+        private static List<object> ObjectsToRemove { get; set; }
         private static float _deltaTime;
         public static event Action OnInitializeWorld;
+        public static event Action OnDestroyWorld;
 
         /// <summary>
         /// Initialize the world for the first time
         /// </summary>
         public static void InitializeWorld()
         {
-            _logicObjects = new List<IGameLogic>(); _renderObjects = new List<IRenderable>();
+            Renderer = new DeferredRenderer();
+            LogicObjects = new List<IGameLogic>(); RenderObjects = new List<IRenderable>();
+            ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
             OnInitializeWorld?.Invoke();
-            foreach (var currentObject in _logicObjects) currentObject.Initialize();
+            foreach (var currentObject in LogicObjects) currentObject.Initialize();
         }
 
         /// <summary>
@@ -33,12 +39,7 @@ namespace HypoSharp.Core
         /// <param name="obj">The new object</param>
         public static void AddObject(object obj)
         {
-            if (obj is IGameLogic)
-            {
-                ((IGameLogic)obj).Initialize();
-                _logicObjects.Add(obj as IGameLogic);
-            }
-            if (obj is IRenderable) _renderObjects.Add(obj as IRenderable);
+            ObjectsToAdd.Add(obj);
         }
 
         /// <summary>
@@ -47,15 +48,7 @@ namespace HypoSharp.Core
         /// <param name="obj">The object to remove</param>
         public static void RemoveObject(object obj)
         {
-            if (obj is IGameLogic)
-            {
-                IGameLogic castObj = ((IGameLogic)obj);
-                castObj.Dispose();
-            }
-            if (obj is IRenderable)
-            {
-                _renderObjects.Remove((IRenderable)obj);
-            }
+            ObjectsToRemove.Add(obj);
         }
 
         /// <summary>
@@ -63,29 +56,45 @@ namespace HypoSharp.Core
         /// </summary>
         public static void FrameWorld()
         {
-            //Update camera
             Raylib.DisableCursor();
 
-            Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.WHITE);
-
-            _deltaTime = Raylib.GetFrameTime();
-
             //Call the loop method each IGameLogic object
-            foreach (var logicObject in _logicObjects) logicObject.Loop(_deltaTime);
+            _deltaTime = Raylib.GetFrameTime();
+            Time.DeltaTime = _deltaTime;
+            Time.TimeSinceGameStart += _deltaTime;
 
-            //Call the render method each IRenderable object
-            foreach (var renderableObject in _renderObjects) renderableObject.Render();
 
-            Raylib.DrawGrid(50, 10);
-            Raylib.EndMode3D();
+            foreach (var logicObject in LogicObjects) logicObject.Loop();
 
-            //Draw fps
-            Raylib.DrawText($"FPS: {Raylib.GetFPS()}", 12, 12, 20, Color.BLACK);
-            Raylib.DrawText($"DELTA: {_deltaTime}", 12, 32, 20, Color.BLACK);
-            Raylib.DrawText($"CAM POS: {Camera.Position.ToString("0.0")}", 12, 52, 20, Color.BLACK);
+            //Add / Remove objects
+            foreach (var addObj in ObjectsToAdd)
+            {
+                if (addObj is IGameLogic)
+                {
+                    ((IGameLogic)addObj).Initialize();
+                    LogicObjects.Add(addObj as IGameLogic);
+                }
+                if (addObj is IRenderable) RenderObjects.Add(addObj as IRenderable);
+            }
+            ObjectsToAdd.Clear();
 
-            Raylib.EndDrawing();
+            foreach (var removeObj in ObjectsToRemove)
+            {
+                if (removeObj is IGameLogic)
+                {
+                    IGameLogic castObj = ((IGameLogic)removeObj);
+                    castObj.Dispose();
+                    LogicObjects.Remove(castObj);
+                }
+                if (removeObj is IRenderable)
+                {
+                    RenderObjects.Remove((IRenderable)removeObj);
+                }
+            }
+            ObjectsToRemove.Clear();
+
+
+            Camera.Draw();
         }
 
         /// <summary>
@@ -93,7 +102,8 @@ namespace HypoSharp.Core
         /// </summary>
         public static void DestroyWorld()
         {
-            foreach (var logicObject in _logicObjects) logicObject.Dispose();
+            OnDestroyWorld?.Invoke();
+            foreach (var logicObject in LogicObjects) logicObject.Dispose();
         }
     }
 }

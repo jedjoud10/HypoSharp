@@ -44,10 +44,33 @@ namespace HypoSharp.Rendering
         }
 
         /// <summary>
+        /// Begin drawing to the render textures
+        /// </summary>
+        public virtual void Draw()
+        {
+            Raylib.BeginDrawing();
+            Raylib.ClearBackground(Color.WHITE);
+
+            Raylib.UpdateCamera(ref _camera3D);
+            Raylib.BeginMode3D(_camera3D);
+
+            World.Renderer.Render();
+
+            Raylib.DrawGrid(50, 10);
+            Raylib.EndMode3D();
+
+            //Draw fps
+            Raylib.DrawText($"FPS: {Raylib.GetFPS()}", 12, 12, 20, Color.BLACK);
+            Raylib.DrawText($"DELTA: {Time.DeltaTime}", 12, 32, 20, Color.BLACK);
+            Raylib.DrawText($"CAM POS: {Position.ToString("0.0")}", 12, 52, 20, Color.BLACK);
+
+            Raylib.EndDrawing();
+        }
+
+        /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        /// <param name="delta">How much time passed since last frame</param>
-        public virtual void Loop(float delta)
+        public virtual void Loop()
         {
             Forward = Vector3.Transform(Vector3.UnitZ, Rotation);
             Up = _camera3D.up;
@@ -55,8 +78,6 @@ namespace HypoSharp.Rendering
             _camera3D.position = Position;
             _camera3D.up = Vector3.Transform(Vector3.UnitY, Rotation);
             _camera3D.target = Forward + Position;
-            Raylib.UpdateCamera(ref _camera3D);
-            Raylib.BeginMode3D(_camera3D);
         }
 
         /// <summary>
