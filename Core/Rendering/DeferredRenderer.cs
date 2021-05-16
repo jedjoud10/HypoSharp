@@ -14,12 +14,14 @@ namespace HypoSharp.Core
     {
         //Deferred renderer shader
         public static Shader Shader { get; set; }
+        public static RenderTexture2D Normal { get; set; }
         /// <summary>
         /// Constructor
         /// </summary>
         public DeferredRenderer()
         {
             World.OnDestroyWorld += Dispose;
+            Normal = Raylib.LoadRenderTexture(1, 1);
             Shader = Raylib.LoadShaderCode(@"
 #version 330
 
@@ -60,13 +62,16 @@ void main()
 
 // Input vertex attributes (from vertex shader)
 in vec2 fragTexCoord;
+in vec3 fragPosition;
 in vec4 fragColor;
+in vec3 fragNormal;
 
 // Input uniform values
 uniform sampler2D texture0;
+uniform sampler2D
 
-// Output fragment color
-out vec4 finalColor;
+// Output GBuffer
+out vec3 gNormal;
 
 // NOTE: Add here your custom variables
 
@@ -75,9 +80,7 @@ void main()
     // Texel color fetching from texture sampler
     vec4 texelColor = texture(texture0, fragTexCoord);
     
-    // NOTE: Implement here your fragment shader code
-    
-    finalColor = vec4(1, 1, 1, 1);
+    gNormal = normalize(fragNormal);
 }
 ");
         }
