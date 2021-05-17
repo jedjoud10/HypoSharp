@@ -1,5 +1,7 @@
-﻿using HypoSharp.Rendering;
-using Raylib_cs;
+﻿using HypoSharp.Core.Input;
+using HypoSharp.Core.Rendering;
+using OpenTK.Graphics.OpenGL;
+using System.Drawing;
 using System;
 using System.Collections.Generic;
 
@@ -12,25 +14,29 @@ namespace HypoSharp.Core
     {
         //Main world vars
         public static Camera Camera { get; set; }
-        public static DeferredRenderer Renderer { get; set; }
         public static List<IGameLogic> LogicObjects { get; set; }
         public static List<IRenderable> RenderObjects { get; set; }
         private static List<object> ObjectsToAdd { get; set; }
         private static List<object> ObjectsToRemove { get; set; }
-        private static float _deltaTime;
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
+        private static HypoSharpWindow Context;
 
         /// <summary>
         /// Initialize the world for the first time
         /// </summary>
-        public static void InitializeWorld()
+        public static void InitializeWorld(HypoSharpWindow _context)
         {
-            Renderer = new DeferredRenderer();
+            Context = _context;
             LogicObjects = new List<IGameLogic>(); RenderObjects = new List<IRenderable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
+            //Rendering stuff
+            GL.ClearColor(Color.Black);
+
             OnInitializeWorld?.Invoke();
             foreach (var currentObject in LogicObjects) currentObject.Initialize();
+
+            Console.WriteLine("WORLD FINISHED INITIALIZATION");
         }
 
         /// <summary>
@@ -54,14 +60,11 @@ namespace HypoSharp.Core
         /// <summary>
         /// This method is ran every frame
         /// </summary>
-        public static void FrameWorld()
+        public static void UpdateWorld(double delta)
         {
-            Raylib.DisableCursor();
-
             //Call the loop method each IGameLogic object
-            _deltaTime = Raylib.GetFrameTime();
-            Time.DeltaTime = _deltaTime;
-            Time.TimeSinceGameStart += _deltaTime;
+            Time.DeltaTime = (float)delta;
+            Time.TimeSinceGameStart += (float)delta;
 
 
             foreach (var logicObject in LogicObjects) logicObject.Loop();
@@ -92,8 +95,16 @@ namespace HypoSharp.Core
                 }
             }
             ObjectsToRemove.Clear();
+        }
 
-
+        /// <summary>
+        /// This method is ran when we want to render stuff
+        /// </summary>
+        public static void RenderWorld()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            Context.SwapBuffers();
+            //Render everything
             Camera.Draw();
         }
 
@@ -103,6 +114,7 @@ namespace HypoSharp.Core
         public static void DestroyWorld()
         {
             OnDestroyWorld?.Invoke();
+            DeferredRenderer.Dispose();
             foreach (var logicObject in LogicObjects) logicObject.Dispose();
         }
     }

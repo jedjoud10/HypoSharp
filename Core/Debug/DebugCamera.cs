@@ -1,7 +1,6 @@
 ﻿using HypoSharp.Core;
 using HypoSharp.Core.Primitives;
-using HypoSharp.Rendering;
-using Raylib_cs;
+using HypoSharp.Core.Rendering;
 using System;
 using System.Numerics;
 
@@ -38,20 +37,13 @@ namespace HypoSharp.Debug
         public override void Loop()
         {
             //Movement
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) Position += Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) Position += Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) Position -= Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) Position -= Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
+            Position += Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
+            Position += Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
+            Position -= Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
+            Position -= Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
 
             //Rotation
-            Vector2 mousePos = Raylib.GetMousePosition();
-            _mouseDelta = mousePos - _lastMousePosition;
-            _summedDelta += _mouseDelta * Sensivity;
-            _summedDelta.Y = Math.Clamp(_summedDelta.Y, -90, 90);
-            Rotation = Quaternion.CreateFromYawPitchRoll(-_summedDelta.X * (MathF.PI / 180), _summedDelta.Y * (MathF.PI / 180), 0);
-            _lastMousePosition = mousePos;
-
-            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON)) World.AddObject(new Cube(Forward * 100 + Position, Quaternion.CreateFromYawPitchRoll(45, 0, 0), Color.BLUE, Vector3.One * 10));
+            
 
             base.Loop();
         }

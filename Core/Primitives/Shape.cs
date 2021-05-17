@@ -1,5 +1,5 @@
-﻿using Raylib_cs;
-using System.Numerics;
+﻿using System.Numerics;
+using HypoSharp.Core.Rendering;
 
 namespace HypoSharp.Core.Primitives
 {
@@ -21,14 +21,11 @@ namespace HypoSharp.Core.Primitives
         /// </summary>
         /// <param name="position">Position for this entity. Default is (0, 0, 0)</param>
         /// <param name="rotation">Rotation (Quaternion) for this entity. Default is (0, 0, 0, 0)</param>
-        /// <param name="color">Color of the shape</param>
-        public Shape(Vector3 position, Quaternion rotation, Color color)
+        public Shape(Vector3 position, Quaternion rotation)
         {
             Renderer = new ModelRenderer();
             Position = position;
             Rotation = rotation;
-            Renderer.Tint = color;
-            Renderer.Scale = 1;
         }
 
         /// <summary>

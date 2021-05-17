@@ -1,5 +1,4 @@
-﻿using Raylib_cs;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace HypoSharp.Core.Primitives
 {
@@ -9,28 +8,16 @@ namespace HypoSharp.Core.Primitives
     public class Cube : Shape
     {
         //Main cube vars
-        private Vector3 _size;
-        public Vector3 Size
-        {
-            get { return _size; }
-            set
-            {
-                _size = value;
-
-                //Update mesh
-                Renderer.Model = Raylib.LoadModelFromMesh(Raylib.GenMeshCube(_size.X, _size.Y, _size.Z));
-            }
-        }
+        public Vector3 Size { get; set; }
 
         /// <summary>
         /// Cube shape constructor
         /// </summary>
         /// <param name="position">Position for this cube. Default is (0, 0, 0)</param>
         /// <param name="rotation">Rotation (Quaternion) for this cube. Default is (0, 0, 0, 0)</param>
-        /// <param name="color">Color of this cube</param>
-        public Cube(Vector3 position, Quaternion rotation, Color color, Vector3 size) : base(position, rotation, color)
+        public Cube(Vector3 position, Quaternion rotation, Vector3 size) : base(position, rotation)
         {
-            Renderer.Model = Raylib.LoadModelFromMesh(Raylib.GenMeshCube(size.X, size.Y, size.Z));
+
         }
 
         /// <summary>
