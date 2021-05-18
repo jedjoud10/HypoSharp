@@ -1,6 +1,6 @@
 ﻿using HypoSharp.Core.Input;
 using HypoSharp.Core.Rendering;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 using System.Drawing;
 using System;
 using System.Collections.Generic;
@@ -12,15 +12,24 @@ namespace HypoSharp.Core
     /// </summary>
     public static class World
     {
-        //Main world vars
-        public static Camera Camera { get; set; }
+        //The camera that is currently rendering the scene
+        public static Camera Camera { get; set; } 
+        //All game logic related objects
         public static List<IGameLogic> LogicObjects { get; set; }
+        //All renderable objects
         public static List<IRenderable> RenderObjects { get; set; }
+        //All the objects we need to add next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToAdd { get; set; }
+        //All the objects we need to remove next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToRemove { get; set; }
+        //Window context
+        public static HypoSharpWindow Context { get; private set; }
+        //The current deferred renderer
+        public static DeferredRenderer DeferredRenderer { get; private set; }
+
+        //Callbacks
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
-        private static HypoSharpWindow Context;
 
         /// <summary>
         /// Initialize the world for the first time
@@ -30,8 +39,7 @@ namespace HypoSharp.Core
             Context = _context;
             LogicObjects = new List<IGameLogic>(); RenderObjects = new List<IRenderable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
-            //Rendering stuff
-            GL.ClearColor(Color.Black);
+            DeferredRenderer = new DeferredRenderer();            
 
             OnInitializeWorld?.Invoke();
             foreach (var currentObject in LogicObjects) currentObject.Initialize();
@@ -66,10 +74,10 @@ namespace HypoSharp.Core
             Time.DeltaTime = (float)delta;
             Time.TimeSinceGameStart += (float)delta;
 
-
+            //Update the IGameLogic objects
             foreach (var logicObject in LogicObjects) logicObject.Loop();
 
-            //Add / Remove objects
+            //Add the queued objects
             foreach (var addObj in ObjectsToAdd)
             {
                 if (addObj is IGameLogic)
@@ -81,6 +89,7 @@ namespace HypoSharp.Core
             }
             ObjectsToAdd.Clear();
 
+            //Remove the queued objects
             foreach (var removeObj in ObjectsToRemove)
             {
                 if (removeObj is IGameLogic)
@@ -102,10 +111,8 @@ namespace HypoSharp.Core
         /// </summary>
         public static void RenderWorld()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            Context.SwapBuffers();
             //Render everything
-            Camera.Draw();
+            DeferredRenderer.Render(Camera);
         }
 
         /// <summary>

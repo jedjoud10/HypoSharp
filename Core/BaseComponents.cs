@@ -10,6 +10,8 @@ namespace HypoSharp.Core
         //Main vars
         public Vector3 Position { get; set; }
         public Quaternion Rotation { get; set; }
+
+            
     }
 
     public interface IGameLogic
