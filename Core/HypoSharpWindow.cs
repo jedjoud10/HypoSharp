@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
@@ -51,13 +49,13 @@ namespace HypoSharp.Core
         }
 
         /// <summary>
-        /// Called when the user closes the window
+        /// When we unload the window and close the program
         /// </summary>
-        protected override void OnClosed()
+        protected override void OnUnload()
         {
-            base.OnClosed();
-            //Dispose of the world
-            World.DestroyWorld();
+            //Dipose the world
+            World.DestroyWorld_AKA_NUKE();
+            base.OnUnload();
         }
     }
 }

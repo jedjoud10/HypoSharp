@@ -14,10 +14,12 @@ namespace HypoSharp.Core
     {
         //The camera that is currently rendering the scene
         public static Camera Camera { get; set; } 
-        //All game logic related objects
-        public static List<IGameLogic> LogicObjects { get; set; }
+        //All game logic related objects, aka entities
+        public static List<IEntity> EntityObjects { get; private set; }
         //All renderable objects
-        public static List<IRenderable> RenderObjects { get; set; }
+        public static List<IRenderable> RenderObjects { get; private set; }
+        //All tickable objects
+        public static List<ITickable> TickableObjects { get; private set; }
         //All the objects we need to add next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToAdd { get; set; }
         //All the objects we need to remove next frame, could be IGameLogic or IRenderable objects
@@ -31,20 +33,24 @@ namespace HypoSharp.Core
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
 
+
         /// <summary>
         /// Initialize the world for the first time
         /// </summary>
         public static void InitializeWorld(HypoSharpWindow _context)
         {
             Context = _context;
-            LogicObjects = new List<IGameLogic>(); RenderObjects = new List<IRenderable>();
+            EntityObjects = new List<IEntity>(); RenderObjects = new List<IRenderable>(); TickableObjects = new List<ITickable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
-            DeferredRenderer = new DeferredRenderer();            
+
+            //Everything essential
+            DeferredRenderer = new DeferredRenderer();
+            DeferredRenderer.Initialize();
 
             OnInitializeWorld?.Invoke();
-            foreach (var currentObject in LogicObjects) currentObject.Initialize();
+            foreach (var currentObject in EntityObjects) currentObject.Initialize();
 
-            Console.WriteLine("WORLD FINISHED INITIALIZATION");
+            Console.WriteLine("World.cs: World finished initialization");
         }
 
         /// <summary>
@@ -72,38 +78,50 @@ namespace HypoSharp.Core
         {
             //Call the loop method each IGameLogic object
             Time.DeltaTime = (float)delta;
-            Time.TimeSinceGameStart += (float)delta;
+            Time.TimeSinceGameStart += Time.DeltaTime;
+            Time.TimeSinceLastTick += Time.DeltaTime;
 
-            //Update the IGameLogic objects
-            foreach (var logicObject in LogicObjects) logicObject.Loop();
+            //Update the IEntity objects
+            foreach (var entityObject in EntityObjects) entityObject.Loop();
 
+            //Update the ITickable objects
+            if (Time.TimeSinceLastTick > (1f / Time.TICK_RATE))
+            {
+                Time.TimeSinceLastTick = 0f;
+                Console.WriteLine("World.cs: Tick");
+                foreach (var tickableObject in TickableObjects) tickableObject.Tick();
+            }
             //Add the queued objects
             foreach (var addObj in ObjectsToAdd)
             {
-                if (addObj is IGameLogic)
+                if (addObj is IEntity)
                 {
-                    ((IGameLogic)addObj).Initialize();
-                    LogicObjects.Add(addObj as IGameLogic);
+                    ((IEntity)addObj).Initialize();
+                    EntityObjects.Add(addObj as IEntity);
                 }
-                if (addObj is IRenderable) RenderObjects.Add(addObj as IRenderable);
+                if (addObj is IRenderable) RenderObjects.Add((IRenderable)addObj);
+                if (addObj is ITickable) TickableObjects.Add((ITickable)addObj);
+
+                Console.WriteLine($"World.cs: Add object {addObj}");
             }
             ObjectsToAdd.Clear();
 
             //Remove the queued objects
             foreach (var removeObj in ObjectsToRemove)
             {
-                if (removeObj is IGameLogic)
+                if (removeObj is IEntity)
                 {
-                    IGameLogic castObj = ((IGameLogic)removeObj);
+                    IEntity castObj = ((IEntity)removeObj);
                     castObj.Dispose();
-                    LogicObjects.Remove(castObj);
+                    EntityObjects.Remove(castObj);
                 }
-                if (removeObj is IRenderable)
-                {
-                    RenderObjects.Remove((IRenderable)removeObj);
-                }
+                if (removeObj is IRenderable) RenderObjects.Remove((IRenderable)removeObj);
+                if (removeObj is ITickable) TickableObjects.Remove((ITickable)removeObj);
+                Console.WriteLine($"World.cs: Remove object {removeObj}");
             }
             ObjectsToRemove.Clear();
+
+            Time.Ticks++;
         }
 
         /// <summary>
@@ -118,11 +136,11 @@ namespace HypoSharp.Core
         /// <summary>
         /// When the user closes the program
         /// </summary>
-        public static void DestroyWorld()
+        public static void DestroyWorld_AKA_NUKE()
         {
             OnDestroyWorld?.Invoke();
             DeferredRenderer.Dispose();
-            foreach (var logicObject in LogicObjects) logicObject.Dispose();
+            foreach (var logicObject in EntityObjects) logicObject.Dispose();
         }
     }
 }

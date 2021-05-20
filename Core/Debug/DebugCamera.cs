@@ -31,21 +31,6 @@ namespace HypoSharp.Debug
             this.Sensivity = sensivity;
         }
 
-        /// <summary>
-        /// The Loop method is ran every frame, before rendering
-        /// </summary>
-        public override void Loop()
-        {
-            //Movement
-            Position += Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
-            Position += Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
-            Position -= Vector3.Transform(Vector3.UnitZ, Rotation) * Time.DeltaTime * Speed;
-            Position -= Vector3.Transform(Vector3.UnitX, Rotation) * Time.DeltaTime * Speed;
-
-            //Rotation
-            
-
-            base.Loop();
-        }
+        
     }
 }

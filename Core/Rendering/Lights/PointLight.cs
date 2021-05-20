@@ -5,10 +5,14 @@ namespace HypoSharp.Core.Rendering
     /// <summary>
     /// A point light used in rendering
     /// </summary>
-    public class PointLight : ITransform
+    public class PointLight : ITransform, IRenderable
     {
-        //ITransform implementations
-        public Vector3 Position { get; set; }
-        public Quaternion Rotation { get; set; }
+        //ITransform transform
+        public Transform Transform { get; set; }
+
+        /// <summary>
+        /// Render this object
+        /// </summary>
+        public void Render() { }
     }
 }

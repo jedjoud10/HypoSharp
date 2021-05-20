@@ -6,12 +6,11 @@ namespace HypoSharp.Core.Primitives
     /// <summary>
     /// A Primitive shape
     /// </summary>
-    public abstract class Shape : ITransform, IGameLogic, IRenderable
+    public abstract class Shape : ITransform, IEntity, IRenderable
     {
-        //ITransform implementations
-        private Quaternion _rotation; private Vector3 _position;
-        public Vector3 Position { get { return _position; } set { _position = value; Renderer.Position = _position; } }
-        public Quaternion Rotation { get { return _rotation; } set { _rotation = value; Renderer.Rotation = _rotation; } }
+        //ITransform transform
+        public Transform Transform { get; set; }
+
 
         //Main shape vars
         public ModelRenderer Renderer { get; set; }
@@ -24,30 +23,34 @@ namespace HypoSharp.Core.Primitives
         public Shape(Vector3 position, Quaternion rotation)
         {
             Renderer = new ModelRenderer();
-            Position = position;
-            Rotation = rotation;
+            Transform.Position = position;
+            Transform.Rotation = rotation;
         }
 
         /// <summary>
-        /// Render this specific EngineEntity
+        /// Initialization method
         /// </summary>
-        public virtual void Render()
-        {
-            Renderer.RenderModel();
-        }
+        public virtual void Initialize() { }
 
-        public void Initialize()
-        {
-        }
+        /// <summary>
+        /// The Loop method is ran every frame, before rendering
+        /// </summary>
+        public virtual void Loop() { }
 
-        public void Loop()
-        {
-            Rotation = Quaternion.CreateFromYawPitchRoll(Time.TimeSinceGameStart, 0, 0);
-        }
+        /// <summary>
+        /// Render this object
+        /// </summary>
+        public virtual void Render() { }
 
-        public void Dispose()
-        {
-            Renderer.DisposeModel();
-        }
+        /// <summary>
+        /// Tick event, called 60 times a second
+        /// </summary>
+
+        public virtual void Tick() { }
+
+        /// <summary>
+        /// Called when this object is getting disposed of
+        /// </summary>
+        public virtual void Dispose() { }
     }
 }

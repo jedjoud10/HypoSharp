@@ -7,11 +7,10 @@ namespace HypoSharp.Core.Rendering
     /// <summary>
     /// A Camera object
     /// </summary>
-    public class Camera : ITransform
+    public class Camera : ITransform, IEntity
     {
-        //ITransform implementations
-        public Vector3 Position { get; set; }
-        public Quaternion Rotation { get; set; }
+        //ITransform
+        public Transform Transform { get; set; }
 
         //Main camera vars
         private float _fov;
@@ -24,5 +23,20 @@ namespace HypoSharp.Core.Rendering
         {
             this._fov = fov;
         }
+
+        /// <summary>
+        /// Initialization method
+        /// </summary>
+        public void Initialize() { }
+
+        /// <summary>
+        /// The Loop method is ran every frame, before rendering
+        /// </summary>
+        public void Loop() { }
+
+        /// <summary>
+        /// Called when this object is getting disposed of
+        /// </summary>
+        public void Dispose() { }
     }
 }

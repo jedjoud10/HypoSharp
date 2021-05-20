@@ -30,6 +30,14 @@ namespace HypoSharp.Core.Rendering
         }
 
         /// <summary>
+        /// Initialize the renderer
+        /// </summary>
+        public void Initialize()
+        {
+
+        }
+
+        /// <summary>
         /// Renders the scene (Deffered lighting)
         /// </summary>
         public void Render(Camera camera)
