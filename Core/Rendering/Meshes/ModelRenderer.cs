@@ -8,14 +8,16 @@ namespace HypoSharp.Core.Rendering
     /// </summary>
     public class ModelRenderer
     {
-        //The mesh that this renderer points to
-        private Model _model;
-        public Model Model { get { return _model; } set { _model = value; RefreshModel(); } }
-        //This mesh's VAO
+        //The model that this renderer, well, renders
+        private Model model;
+        public Model Model { get { return model; } set { model = value; RefreshModel(); } }
+        //This model's VAO
         public int VAO { get; private set; }
-        //This mesh's VBO list
+        //This model's VBO list
         public int VertVBO { get; private set; }
         public int ColrVBO { get; private set; }
+        //This model's EBO
+        public int EBO { get; private set; }
         //This renderer's shader
         public Shader Shader { get; set; } 
 
@@ -27,28 +29,35 @@ namespace HypoSharp.Core.Rendering
             //Generate the vertex VBO for this mesh
             VertVBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, _model.Vertices.Length * sizeof(float) * 3, _model.Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, model.Vertices.Length * sizeof(float) * 3, model.Vertices, BufferUsageHint.StaticDraw);
 
-            //Generate the global VAO for this mesh
+            //Generate the global VAO for this model
             VAO = GL.GenVertexArray();
             GL.BindVertexArray(VAO);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
             GL.EnableVertexAttribArray(0);
 
+            //Generate the global EBO for this mesh
+            EBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, model.Indices.Length * sizeof(uint), model.Indices, BufferUsageHint.StaticDraw);
+
             //Setup the shader 
             Shader = new Shader(@"#version 330 core
 layout (location = 0) in vec3 aPosition;
-
+out vec3 color;
 void main()
 {
     gl_Position = vec4(aPosition, 1.0);
+    color = aPosition;
 }
 ", @"#version 330 core
 out vec4 FragColor;
+in vec3 color;
 
 void main()
 {
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    FragColor = vec4(color, 1.0);
 }", "DefaultDiffuse");
             Shader.Use();
         }
@@ -61,7 +70,7 @@ void main()
             //Bind the VAO, and make sure to unbind after rendering it
             Shader.Use();
             GL.BindVertexArray(VAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            GL.DrawElements(PrimitiveType.Triangles, model.Indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
         }
 

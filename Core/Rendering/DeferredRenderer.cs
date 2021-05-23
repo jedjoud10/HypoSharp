@@ -13,12 +13,6 @@ namespace HypoSharp.Core.Rendering
     /// </summary>
     public class DeferredRenderer
     {
-        Vector3[] vertices = 
-        {
-            new Vector3(-0.5f, -0.5f, 0),
-            new Vector3(0.5f, -0.5f, 0),
-            new Vector3( 0, 0.5f, 0)
-        };
         Model model;
         ModelRenderer renderer;
 
@@ -30,14 +24,20 @@ namespace HypoSharp.Core.Rendering
             Console.WriteLine("Renderer: Renderer started initialization...");            
             GL.ClearColor(1, 1, 1, 1);
 
+            //Create a test model
             model = new Model()
             {
-                Vertices = vertices
+                Vertices = new Vector3[3] {
+                    new Vector3(-0.5f, -0.5f, 0),
+                    new Vector3(0.5f, -0.5f, 0),
+                    new Vector3( 0, 0.5f, 0)
+                },
+                Indices = new uint[3] 
+                {
+                    0, 1, 2
+                }                
             };
-            renderer = new ModelRenderer()
-            {
-                Model = model
-            };
+            renderer = new ModelRenderer() { Model = model };
         }
 
         /// <summary>

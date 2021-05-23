@@ -47,6 +47,7 @@ namespace HypoSharp.Core.Rendering
             handle = GL.CreateProgram();
             GL.AttachShader(handle, vertShader);
             GL.AttachShader(handle, fragShader);
+            GL.LinkProgram(handle);
 
             // Cleaning up
             GL.DetachShader(handle, vertShader);
@@ -61,6 +62,13 @@ namespace HypoSharp.Core.Rendering
         /// Use this shader before rendering an object
         /// </summary>
         public void Use() { GL.UseProgram(handle); }
+
+        /// <summary>
+        /// Get an attribute location from it's name
+        /// </summary>
+        /// <param name="attribName">The attribute name</param>
+        /// <returns></returns>
+        public int GetAttribLocation(string attribName) { return GL.GetAttribLocation(handle, attribName); }
 
         /// <summary>
         /// Dispose of this shader

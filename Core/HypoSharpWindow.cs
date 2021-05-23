@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using HypoSharp.Core.Input;
 using System;
 
 namespace HypoSharp.Core
@@ -50,6 +51,24 @@ namespace HypoSharp.Core
             //Main game loop
             World.UpdateWorld(args.Time); 
             base.OnUpdateFrame(args);
+        }
+
+        /// <summary>
+        /// Whenever the user presses a key
+        /// </summary>
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            InputManager.OnKeyDown(e);
+            base.OnKeyDown(e);
+        }
+
+        /// <summary>
+        /// Whenever the user releases a key
+        /// </summary>
+        protected override void OnKeyUp(KeyboardKeyEventArgs e)
+        {
+            InputManager.OnKeyDown(e);
+            base.OnKeyUp(e);
         }
 
         /// <summary>
