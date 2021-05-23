@@ -13,6 +13,7 @@ namespace HypoSharp.Core.Primitives
 
 
         //Main shape vars
+        public Model Model { get; set; }
         public ModelRenderer Renderer { get; set; }
 
         /// <summary>
@@ -22,9 +23,12 @@ namespace HypoSharp.Core.Primitives
         /// <param name="rotation">Rotation (Quaternion) for this entity. Default is (0, 0, 0, 0)</param>
         public Shape(Vector3 position, Quaternion rotation)
         {
-            Renderer = new ModelRenderer();
             Transform.Position = position;
             Transform.Rotation = rotation;
+            Renderer = new ModelRenderer()
+            {
+                Model = Model,
+            };
         }
 
         /// <summary>
@@ -51,6 +55,6 @@ namespace HypoSharp.Core.Primitives
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public virtual void Dispose() { }
+        public virtual void Dispose() { Renderer.DisposeModel(); }
     }
 }

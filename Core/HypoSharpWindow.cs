@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
@@ -10,12 +10,16 @@ namespace HypoSharp.Core
     /// </summary>
     public class HypoSharpWindow : GameWindow
     {
+        public GameWindowSettings WindowSettings { get; private set; }
+        public NativeWindowSettings NativeWindowSettings { get; private set; }
+
         /// <summary>
         /// When we create the window
         /// </summary>
         public HypoSharpWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
-            
+            WindowSettings = gameWindowSettings;
+            NativeWindowSettings = nativeWindowSettings;
         }
 
         /// <summary>

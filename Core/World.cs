@@ -1,6 +1,6 @@
 ﻿using HypoSharp.Core.Input;
 using HypoSharp.Core.Rendering;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System;
 using System.Collections.Generic;
@@ -39,6 +39,8 @@ namespace HypoSharp.Core
         /// </summary>
         public static void InitializeWorld(HypoSharpWindow _context)
         {
+            Console.WriteLine("World: World started initialization with settings...");
+            Console.WriteLine($"TICK_RATE: {Time.TICK_RATE} \nTARGETTED_FPS: {_context.WindowSettings.RenderFrequency}");
             Context = _context;
             EntityObjects = new List<IEntity>(); RenderObjects = new List<IRenderable>(); TickableObjects = new List<ITickable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
@@ -46,11 +48,9 @@ namespace HypoSharp.Core
             //Everything essential
             DeferredRenderer = new DeferredRenderer();
             DeferredRenderer.Initialize();
-
             OnInitializeWorld?.Invoke();
             foreach (var currentObject in EntityObjects) currentObject.Initialize();
-
-            Console.WriteLine("World.cs: World finished initialization");
+            Console.WriteLine("World: World finished initialization");
         }
 
         /// <summary>
@@ -88,7 +88,6 @@ namespace HypoSharp.Core
             if (Time.TimeSinceLastTick > (1f / Time.TICK_RATE))
             {
                 Time.TimeSinceLastTick = 0f;
-                Console.WriteLine("World.cs: Tick");
                 foreach (var tickableObject in TickableObjects) tickableObject.Tick();
             }
             //Add the queued objects
@@ -102,7 +101,7 @@ namespace HypoSharp.Core
                 if (addObj is IRenderable) RenderObjects.Add((IRenderable)addObj);
                 if (addObj is ITickable) TickableObjects.Add((ITickable)addObj);
 
-                Console.WriteLine($"World.cs: Add object {addObj}");
+                Console.WriteLine($"World: Add object {addObj}");
             }
             ObjectsToAdd.Clear();
 
@@ -117,7 +116,7 @@ namespace HypoSharp.Core
                 }
                 if (removeObj is IRenderable) RenderObjects.Remove((IRenderable)removeObj);
                 if (removeObj is ITickable) TickableObjects.Remove((ITickable)removeObj);
-                Console.WriteLine($"World.cs: Remove object {removeObj}");
+                Console.WriteLine($"World: Remove object {removeObj}");
             }
             ObjectsToRemove.Clear();
 
