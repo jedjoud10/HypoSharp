@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using HypoSharp.Core.Rendering;
+using System.Numerics;
 
 namespace HypoSharp.Core
 {
@@ -11,7 +12,7 @@ namespace HypoSharp.Core
         /// <summary>
         /// Initialization method
         /// </summary>
-        public void Initialize() { }
+        public void Initialize(object entity) { }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
@@ -21,7 +22,7 @@ namespace HypoSharp.Core
         /// <summary>
         /// Render this object
         /// </summary>
-        public void Render() { }
+        public void Render(Camera camera) { }
 
         /// <summary>
         /// Tick event, called 60 times a second

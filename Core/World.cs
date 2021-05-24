@@ -49,7 +49,7 @@ namespace HypoSharp.Core
             DeferredRenderer = new DeferredRenderer();
             DeferredRenderer.Initialize();
             OnInitializeWorld?.Invoke();
-            foreach (var currentObject in EntityObjects) currentObject.Initialize();
+            foreach (var currentObject in EntityObjects) currentObject.Initialize(currentObject);
             Console.WriteLine("World: World finished initialization");
         }
 
@@ -95,7 +95,7 @@ namespace HypoSharp.Core
             {
                 if (addObj is IEntity)
                 {
-                    ((IEntity)addObj).Initialize();
+                    ((IEntity)addObj).Initialize(addObj);
                     EntityObjects.Add(addObj as IEntity);
                 }
                 if (addObj is IRenderable) RenderObjects.Add((IRenderable)addObj);

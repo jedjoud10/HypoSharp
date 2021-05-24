@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using HypoSharp.Core.Rendering;
+using OpenTK.Mathematics;
 
 namespace HypoSharp.Core.Primitives
 {
@@ -18,15 +19,6 @@ namespace HypoSharp.Core.Primitives
         public Cube(Vector3 position, Quaternion rotation, Vector3 size) : base(position, rotation)
         {
 
-        }
-
-        /// <summary>
-        /// Render this specific EngineEntity
-        /// </summary>
-        public override void Render()
-        {
-            base.Render();
-            Renderer.RenderModel();
         }
     }
 }

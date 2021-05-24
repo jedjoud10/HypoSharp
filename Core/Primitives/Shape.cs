@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using OpenTK.Mathematics;
 using HypoSharp.Core.Rendering;
 
 namespace HypoSharp.Core.Primitives
@@ -34,27 +34,24 @@ namespace HypoSharp.Core.Primitives
         /// <summary>
         /// Initialization method
         /// </summary>
-        public virtual void Initialize() { }
+        void IEntity.Initialize(object entity) { }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        public virtual void Loop() { }
+        void IEntity.Loop() { }
 
         /// <summary>
         /// Render this object
         /// </summary>
-        public virtual void Render() { }
-
-        /// <summary>
-        /// Tick event, called 60 times a second
-        /// </summary>
-
-        public virtual void Tick() { }
+        void IRenderable.Render(Camera camera)
+        {
+            Renderer.RenderModel(camera);
+        }
 
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public virtual void Dispose() { Renderer.DisposeModel(); }
+        void IEntity.Dispose() { Renderer.DisposeModel(); }
     }
 }

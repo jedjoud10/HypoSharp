@@ -1,6 +1,6 @@
 ﻿using HypoSharp.Core;
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace HypoSharp.Core.Rendering
 {
@@ -11,6 +11,8 @@ namespace HypoSharp.Core.Rendering
     {
         //ITransform
         public Transform Transform { get; set; }
+        public Matrix4 ViewMatrix { get; set; }
+        public Matrix4 ProjectionMatrix { get; set; }
 
         //Main camera vars
         private float _fov;
@@ -27,16 +29,19 @@ namespace HypoSharp.Core.Rendering
         /// <summary>
         /// Initialization method
         /// </summary>
-        public void Initialize() { }
+        void IEntity.Initialize(object entity) { }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        public void Loop() { }
+        void IEntity.Loop() 
+        {
+            ViewMatrix = Matrix4.CreateTranslation(Transform.Position);
+        }
 
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public void Dispose() { }
+        void IEntity.Dispose() { }
     }
 }

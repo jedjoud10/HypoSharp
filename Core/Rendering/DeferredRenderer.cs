@@ -46,7 +46,7 @@ namespace HypoSharp.Core.Rendering
         public void Render(Camera camera)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            renderer.RenderModel();
+            renderer.RenderModel(camera);
             //Call the render method each IRenderable object
             //foreach (var renderableObject in World.RenderObjects) renderableObject.Render();
             World.Context.SwapBuffers();

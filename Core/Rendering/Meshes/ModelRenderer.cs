@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using System.Numerics;
 
 namespace HypoSharp.Core.Rendering
 {
@@ -54,6 +53,7 @@ void main()
 ", @"#version 330 core
 out vec4 FragColor;
 in vec3 color;
+uniform float test;
 
 void main()
 {
@@ -65,9 +65,11 @@ void main()
         /// <summary>
         /// Renders the specific model
         /// </summary>
-        public void RenderModel()
+        public void RenderModel(Camera camera)
         {
             //Bind the VAO, and make sure to unbind after rendering it
+            //Shader.SetMatrix4(Shader.GetAttribLocation("viewMatrix"), camera.ViewMatrix);
+            Shader.SetFloat(Shader.GetAttribLocation("test"), 0.5f);
             Shader.Use();
             GL.BindVertexArray(VAO);
             GL.DrawElements(PrimitiveType.Triangles, model.Indices.Length, DrawElementsType.UnsignedInt, 0);

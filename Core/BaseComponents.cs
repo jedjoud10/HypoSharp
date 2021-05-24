@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using HypoSharp.Core.Rendering;
+using OpenTK.Mathematics;
 
 namespace HypoSharp.Core
 {
@@ -41,7 +42,13 @@ namespace HypoSharp.Core
         /// <summary>
         /// Initialization method
         /// </summary>
-        public void Initialize();
+        public virtual void Initialize(object entity)
+        {
+            if (entity is ITransform) 
+            {
+                ((ITransform)entity).Transform = new Transform();
+            }
+        }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
@@ -73,6 +80,6 @@ namespace HypoSharp.Core
         /// <summary>
         /// Render this object
         /// </summary>
-        public void Render();
+        public void Render(Camera camera);
     }
 }

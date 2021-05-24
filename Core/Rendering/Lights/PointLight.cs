@@ -13,6 +13,6 @@ namespace HypoSharp.Core.Rendering
         /// <summary>
         /// Render this object
         /// </summary>
-        public void Render() { }
+        public void Render(Camera camera) { }
     }
 }
