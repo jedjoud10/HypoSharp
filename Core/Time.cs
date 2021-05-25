@@ -7,16 +7,18 @@ namespace HypoSharp.Core
     /// </summary>
     public static class Time
     {
-        //Main time vars
-        //Time between each frames
-        public static float DeltaTime { get; set; }
-        //Time (in second) from the start of the game
+        // Main time vars
+        // Time between each frames
+        public static float FrameDeltaTime { get; set; }
+        // Time between each update loop
+        public static float UpdateDeltaTime { get; set; }
+        // Time (in second) from the start of the game
         public static float TimeSinceGameStart { get; set; }
-        //How many tick in a second
+        // How many tick in a second
         public const uint TICK_RATE = 4;
-        //The total amount of ticks
+        // The total amount of ticks
         public static ulong Ticks { get; internal set; }
-        //Time since the last tick
+        // Time since the last tick
         public static float TimeSinceLastTick { get; set; }
     }
 }

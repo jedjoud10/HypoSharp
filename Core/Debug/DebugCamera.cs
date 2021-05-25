@@ -1,8 +1,10 @@
 ﻿using HypoSharp.Core;
+using HypoSharp.Core.Input;
 using HypoSharp.Core.Primitives;
 using HypoSharp.Core.Rendering;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
-using System.Numerics;
 
 namespace HypoSharp.Debug
 {
@@ -11,6 +13,7 @@ namespace HypoSharp.Debug
     /// </summary>
     public class DebugCamera : Camera
     {
+        // DebugCamera vars
         public const float defaultSpeed = 50f;
         public const float defaultSensivity = 0.04f;
         public float Speed { get; set; }
@@ -20,17 +23,48 @@ namespace HypoSharp.Debug
         private Vector2 _summedDelta;
 
         /// <summary>
-        /// Debug camera constructor
+        /// The Loop method is ran every frame, before rendering
         /// </summary>
-        /// <param name="fov">Field of View (Horizontal) of this camera. Defaults to 90</param>
-        /// <param name="speed">Speed of this debug camera. Defaults to 50</param>
-        /// <param name="sensivity">The sensivity of the mouse when looking around. Defaults to 0.04</param>
-        public DebugCamera(float fov = 60, float speed = defaultSpeed, float sensivity = defaultSensivity) : base(fov)
+        public override void Loop()
         {
-            this.Speed = speed;
-            this.Sensivity = sensivity;
-        }
+            base.Loop();
 
-        
+            //Debug camera controls
+            if (InputManager.IsKeyMappingHeld(Keys.Space))
+            {
+                World.Camera.Transform.Position += Vector3.UnitY * 0.01f;
+                World.Camera.UpdateViewMatrix();
+            }
+
+            if (InputManager.IsKeyMappingHeld(Keys.LeftShift))
+            {
+                World.Camera.Transform.Position -= Vector3.UnitY * 0.01f;
+                World.Camera.UpdateViewMatrix();
+            }
+
+            if (InputManager.IsKeyMappingHeld(Keys.W))
+            {
+                World.Camera.Transform.Position -= Vector3.UnitZ * 0.01f;
+                World.Camera.UpdateViewMatrix();
+            }
+
+            if (InputManager.IsKeyMappingHeld(Keys.S))
+            {
+                World.Camera.Transform.Position += Vector3.UnitZ * 0.01f;
+                World.Camera.UpdateViewMatrix();
+            }
+
+            if (InputManager.IsKeyMappingHeld(Keys.A))
+            {
+                World.Camera.Transform.Position -= Vector3.UnitX * 0.01f;
+                World.Camera.UpdateViewMatrix();
+            }
+
+            if (InputManager.IsKeyMappingHeld(Keys.D))
+            {
+                World.Camera.Transform.Position += Vector3.UnitX * 0.01f;
+                World.Camera.UpdateViewMatrix();
+            }
+        }
     }
 }

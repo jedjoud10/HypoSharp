@@ -12,27 +12,27 @@ namespace HypoSharp.Core
         /// <summary>
         /// Initialization method
         /// </summary>
-        public void Initialize(object entity) { }
+        public virtual void Initialize() { }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        public void Loop() { }
+        public virtual void Loop() { }
 
         /// <summary>
         /// Render this object
         /// </summary>
-        public void Render(Camera camera) { }
+        public virtual void Render(Camera camera) { }
 
         /// <summary>
         /// Tick event, called 60 times a second
         /// </summary>
 
-        public void Tick() { }
+        public virtual void Tick() { }
 
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public void Dispose() { }
+        public virtual void Dispose() { }
     }
 }

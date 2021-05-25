@@ -12,27 +12,33 @@ namespace HypoSharp.Core
     /// </summary>
     public static class World
     {
-        //The camera that is currently rendering the scene
+        // The camera that is currently rendering the scene
         public static Camera Camera { get; set; } 
-        //All game logic related objects, aka entities
+        // All game logic related objects, aka entities
         public static List<IEntity> EntityObjects { get; private set; }
-        //All renderable objects
+        // All renderable objects
         public static List<IRenderable> RenderObjects { get; private set; }
-        //All tickable objects
+        // All tickable objects
         public static List<ITickable> TickableObjects { get; private set; }
-        //All the objects we need to add next frame, could be IGameLogic or IRenderable objects
+        // All the objects we need to add next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToAdd { get; set; }
-        //All the objects we need to remove next frame, could be IGameLogic or IRenderable objects
+        // All the objects we need to remove next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToRemove { get; set; }
-        //Window context
+        // Window context
         public static HypoSharpWindow Context { get; private set; }
-        //The current deferred renderer
+        // The current deferred renderer
         public static DeferredRenderer DeferredRenderer { get; private set; }
-
+        // The aspect ratio of the current window
+        // Width of the window
+        public static int WindowWidth { get; private set; }
+        // Height of the height
+        public static int WindowHeight { get; private set; }
+        // The aspect ratio (Height / Width)
+        public static float AspectRatio { get { return (float)WindowHeight / (float)WindowWidth; } }
         //Callbacks
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
-
+        public static event Action OnWindowResize;
 
         /// <summary>
         /// Initialize the world for the first time
@@ -40,7 +46,7 @@ namespace HypoSharp.Core
         public static void InitializeWorld(HypoSharpWindow _context)
         {
             Console.WriteLine("World: World started initialization with settings...");
-            Console.WriteLine($"TICK_RATE: {Time.TICK_RATE} \nTARGETTED_FPS: {_context.WindowSettings.RenderFrequency}");
+            Console.WriteLine($"TICK_RATE: {Time.TICK_RATE} \nTARGETTED_FPS: {_context.WindowSettings.RenderFrequency} \nTARGETTED_UPDATE_RATE: {_context.WindowSettings.UpdateFrequency}");
             Context = _context;
             EntityObjects = new List<IEntity>(); RenderObjects = new List<IRenderable>(); TickableObjects = new List<ITickable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
@@ -48,8 +54,12 @@ namespace HypoSharp.Core
             //Everything essential
             DeferredRenderer = new DeferredRenderer();
             DeferredRenderer.Initialize();
+            InputManager.KeyboardState = Context.KeyboardState;
+            InputManager.LastKeyboardState = Context.KeyboardState;
+            InputManager.MouseState = Context.MouseState;
+
             OnInitializeWorld?.Invoke();
-            foreach (var currentObject in EntityObjects) currentObject.Initialize(currentObject);
+            foreach (var currentObject in EntityObjects) currentObject.InitializeAbstract(currentObject);
             Console.WriteLine("World: World finished initialization");
         }
 
@@ -57,18 +67,24 @@ namespace HypoSharp.Core
         /// Adds an object to the world
         /// </summary>
         /// <param name="obj">The new object</param>
-        public static void AddObject(object obj)
-        {
-            ObjectsToAdd.Add(obj);
-        }
+        public static void AddObject(object obj) { ObjectsToAdd.Add(obj); }
 
         /// <summary>
         /// Removes an object from the world
         /// </summary>
         /// <param name="obj">The object to remove</param>
-        public static void RemoveObject(object obj)
-        {
-            ObjectsToRemove.Add(obj);
+        public static void RemoveObject(object obj) { ObjectsToRemove.Add(obj); }
+
+        /// <summary>
+        /// When the OpenTK window gets resized
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="width"></param>
+        public static void ResizeWindow(int height, int width) 
+        { 
+            WindowHeight = height; WindowWidth = width;
+            OnWindowResize?.Invoke(); 
+            Console.WriteLine($"World: Resize window ---- Height: {height} Width: {width}"); 
         }
 
         /// <summary>
@@ -77,9 +93,9 @@ namespace HypoSharp.Core
         public static void UpdateWorld(double delta)
         {
             //Call the loop method each IGameLogic object
-            Time.DeltaTime = (float)delta;
-            Time.TimeSinceGameStart += Time.DeltaTime;
-            Time.TimeSinceLastTick += Time.DeltaTime;
+            Time.UpdateDeltaTime = (float)delta;
+            Time.TimeSinceGameStart += Time.UpdateDeltaTime;
+            Time.TimeSinceLastTick += Time.UpdateDeltaTime;
 
             //Update the IEntity objects
             foreach (var entityObject in EntityObjects) entityObject.Loop();
@@ -95,13 +111,13 @@ namespace HypoSharp.Core
             {
                 if (addObj is IEntity)
                 {
-                    ((IEntity)addObj).Initialize(addObj);
+                    ((IEntity)addObj).InitializeAbstract(addObj);
                     EntityObjects.Add(addObj as IEntity);
                 }
                 if (addObj is IRenderable) RenderObjects.Add((IRenderable)addObj);
                 if (addObj is ITickable) TickableObjects.Add((ITickable)addObj);
 
-                Console.WriteLine($"World: Add object {addObj}");
+                Console.WriteLine($"World: Added object {addObj}");
             }
             ObjectsToAdd.Clear();
 
@@ -116,7 +132,7 @@ namespace HypoSharp.Core
                 }
                 if (removeObj is IRenderable) RenderObjects.Remove((IRenderable)removeObj);
                 if (removeObj is ITickable) TickableObjects.Remove((ITickable)removeObj);
-                Console.WriteLine($"World: Remove object {removeObj}");
+                Console.WriteLine($"World: Removed object {removeObj}");
             }
             ObjectsToRemove.Clear();
 
@@ -126,10 +142,13 @@ namespace HypoSharp.Core
         /// <summary>
         /// This method is ran when we want to render stuff
         /// </summary>
-        public static void RenderWorld()
+        public static void RenderWorld(double delta)
         {
+            Time.FrameDeltaTime = (float)delta;
             //Render everything
             DeferredRenderer.Render(Camera);
+            //Read input from the keyboard
+            InputManager.OnInputLoop();
         }
 
         /// <summary>

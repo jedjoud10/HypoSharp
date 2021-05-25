@@ -20,7 +20,7 @@ namespace HypoSharp.Core
         public HypoSharpWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
             WindowSettings = gameWindowSettings;
-            NativeWindowSettings = nativeWindowSettings;
+            NativeWindowSettings = nativeWindowSettings;            
         }
 
         /// <summary>
@@ -28,19 +28,20 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnLoad()
         {
-            //Creation of the world
+            // Creation of the world
             World.InitializeWorld(this);
             base.OnLoad();
         }
 
         /// <summary>
-        /// When we want to render all the objects in the world
+        /// When the window gets resized
         /// </summary>
-        protected override void OnRenderFrame(FrameEventArgs args)
+        protected override void OnResize(ResizeEventArgs e)
         {
-            //Render the whole world
-            World.RenderWorld();
-            base.OnRenderFrame(args);
+            // Resize the window
+            //GL.Viewport(0, 0, e.Width, e.Height);
+            World.ResizeWindow(e.Height, e.Width);
+            base.OnResize(e);
         }
 
         /// <summary>
@@ -48,27 +49,19 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
-            //Main game loop
-            World.UpdateWorld(args.Time); 
+            // Main game loop            
+            World.UpdateWorld(args.Time);
             base.OnUpdateFrame(args);
         }
 
         /// <summary>
-        /// Whenever the user presses a key
+        /// When we want to render all the objects in the world
         /// </summary>
-        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        protected override void OnRenderFrame(FrameEventArgs args)
         {
-            InputManager.OnKeyDown(e);
-            base.OnKeyDown(e);
-        }
-
-        /// <summary>
-        /// Whenever the user releases a key
-        /// </summary>
-        protected override void OnKeyUp(KeyboardKeyEventArgs e)
-        {
-            InputManager.OnKeyDown(e);
-            base.OnKeyUp(e);
+            // Render the whole world
+            World.RenderWorld(args.Time);
+            base.OnRenderFrame(args);
         }
 
         /// <summary>
@@ -76,7 +69,7 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnUnload()
         {
-            //Dipose the world
+            // Dipose the world
             World.DestroyWorld_AKA_NUKE();
             base.OnUnload();
         }

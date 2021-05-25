@@ -1,5 +1,6 @@
 ﻿using HypoSharp.Core.Rendering;
 using OpenTK.Mathematics;
+using System;
 
 namespace HypoSharp.Core
 {
@@ -15,6 +16,14 @@ namespace HypoSharp.Core
     /// </summary>
     public class Transform
     {
+        /// <summary>
+        /// Constructor of this transform
+        /// </summary>
+        public Transform() 
+        {
+            Rotation = Quaternion.Identity;
+        }
+
         //Current position of the transform
         public Vector3 Position { get; set; }
         //Current rotation of the transform
@@ -40,15 +49,23 @@ namespace HypoSharp.Core
     public interface IEntity
     {
         /// <summary>
-        /// Initialization method
+        /// Initialization method (Called only from world)
         /// </summary>
-        public virtual void Initialize(object entity)
+        public void InitializeAbstract(object entity)
         {
-            if (entity is ITransform) 
+            Console.WriteLine($"IEntity: Setup entity {entity}");
+            if (entity is ITransform)
             {
-                ((ITransform)entity).Transform = new Transform();
+                ITransform transformEntity = ((ITransform)entity);
+                transformEntity.Transform ??= new Transform();
             }
+            Initialize();
         }
+
+        /// <summary>
+        /// Initialization method (The one that you need to implement)
+        /// </summary>
+        public void Initialize();
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering

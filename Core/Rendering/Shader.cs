@@ -4,9 +4,9 @@ using System.IO;
 using System.Numerics;
 using System.Text;
 using OpenTK.Mathematics;
-using Vector4 = System.Numerics.Vector4;
-using Vector3 = System.Numerics.Vector3;
-using Vector2 = System.Numerics.Vector2;
+using Vector4 = OpenTK.Mathematics.Vector4;
+using Vector3 = OpenTK.Mathematics.Vector3;
+using Vector2 = OpenTK.Mathematics.Vector2;
 
 namespace HypoSharp.Core.Rendering
 {
@@ -47,6 +47,8 @@ namespace HypoSharp.Core.Rendering
             string infoLogFrag = GL.GetShaderInfoLog(fragShader);
             if (infoLogFrag != string.Empty) System.Console.WriteLine(infoLogFrag);
 
+            bool compiledSuccsessfully = infoLogVert == string.Empty && infoLogFrag == string.Empty;
+
             // Create the GPU program
             handle = GL.CreateProgram();
             GL.AttachShader(handle, vertShader);
@@ -59,7 +61,7 @@ namespace HypoSharp.Core.Rendering
             GL.DeleteShader(fragShader);
             GL.DeleteShader(vertShader);
 
-            Console.WriteLine($"Shaders: Shader {Name} compiled succsessfully");
+            if (compiledSuccsessfully) Console.WriteLine($"Shaders: Shader {Name} compiled succsessfully");
         }
 
         /// <summary>
@@ -74,19 +76,26 @@ namespace HypoSharp.Core.Rendering
         /// <returns></returns>
         public int GetAttribLocation(string attribName) { return GL.GetAttribLocation(handle, attribName); }
 
+        /// <summary>
+        /// Get a uniform location from it's name
+        /// </summary>
+        /// <param name="uniformName">The uniform name</param>
+        /// <returns></returns>
+        public int GetUniformLocation(string uniformName) { return GL.GetUniformLocation(handle, uniformName); }
+
         #region Set Uniforms        
 
-        // Sets a Uniform float
+        // Sets a uniform float
         public void SetFloat(int location, float value) { GL.Uniform1(location, value); }
-        // Sets a Uniform int
+        // Sets a uniform int
         public void SetInt(int location, int value) { GL.Uniform1(location, value); }
-        // Sets a Uniform Vector2
+        // Sets a uniform Vector2
         public void SetVector2(int location, Vector2 value) { GL.Uniform2(location, value.X, value.Y); }
-        // Sets a Uniform Vector3
+        // Sets a uniform Vector3
         public void SetVector3(int location, Vector3 value) { GL.Uniform3(location, value.X, value.Y, value.Z); }
-        // Sets a Uniform Vector4
+        // Sets a uniform Vector4
         public void SetVector4(int location, Vector4 value) { GL.Uniform4(location, value.X, value.Y, value.Z, value.W); }
-        // Sets a Uniform Matrix4
+        // Sets a uniform Matrix4
         public void SetMatrix4(int location, Matrix4 value) { GL.UniformMatrix4(location, false, ref value); }
 
         #endregion  

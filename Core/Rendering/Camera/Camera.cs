@@ -9,39 +9,63 @@ namespace HypoSharp.Core.Rendering
     /// </summary>
     public class Camera : ITransform, IEntity
     {
-        //ITransform
-        public Transform Transform { get; set; }
+        // ITransform
+        private Transform transform;
+        public Transform Transform { get { return transform; } set { transform = value; UpdateViewMatrix(); } }
         public Matrix4 ViewMatrix { get; set; }
         public Matrix4 ProjectionMatrix { get; set; }
 
-        //Main camera vars
-        private float _fov;
+        // Main camera vars
 
-        /// <summary>
-        /// Camera constructor
-        /// </summary>
-        /// <param name="fov">Field of View (Horizontal) of this camera. Defaults to 90</param>
-        public Camera(float fov = 60)
-        {
-            this._fov = fov;
-        }
+        // Vertrical Fov
+        private float fov = 0.78f;
+        public float FovY { get { return fov; } set { fov = value; UpdateProjectionMatrix(); } }
+
+        // Aspect ratio (Height / Width)
+        public float AspectRatio { get; set; } = 0.75f;
+
+        // Near-Far clip planes
+        public float NearClipPlane { get; set; } = 0.3f;
+        public float FarClipPlane { get; set; } = 1000f;
 
         /// <summary>
         /// Initialization method
         /// </summary>
-        void IEntity.Initialize(object entity) { }
+        public virtual void Initialize() 
+        {
+            //Default aspect ratio
+            UpdateProjectionMatrix();
+            UpdateViewMatrix();
+            World.OnWindowResize += OnWindowResize;
+        }
+
+        /// <summary>
+        /// When the window gets resized
+        /// </summary>
+        public void OnWindowResize() 
+        {
+            AspectRatio = World.AspectRatio;
+            UpdateProjectionMatrix();
+        }
+
+        /// <summary>
+        /// Update the view matrix when the transform changes
+        /// </summary>
+        public void UpdateViewMatrix() { ViewMatrix = Matrix4.CreateFromQuaternion(Transform.Rotation) * Matrix4.CreateTranslation(-Transform.Position); }
+
+        /// <summary>
+        /// Update the projection matrix when the Fov or the AspectRatio changes
+        /// </summary>
+        public void UpdateProjectionMatrix() { ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FovY, AspectRatio, NearClipPlane, FarClipPlane); }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        void IEntity.Loop() 
-        {
-            ViewMatrix = Matrix4.CreateTranslation(Transform.Position);
-        }
+        public virtual void Loop() { }
 
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        void IEntity.Dispose() { }
+        public virtual void Dispose() { }
     }
 }

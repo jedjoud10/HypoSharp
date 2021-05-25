@@ -1,4 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using System;
 
 namespace HypoSharp.Core.Rendering
 {
@@ -7,18 +9,21 @@ namespace HypoSharp.Core.Rendering
     /// </summary>
     public class ModelRenderer
     {
-        //The model that this renderer, well, renders
+        // The model that this renderer, well, renders
         private Model model;
         public Model Model { get { return model; } set { model = value; RefreshModel(); } }
-        //This model's VAO
+        // This model's VAO
         public int VAO { get; private set; }
-        //This model's VBO list
+        // This model's VBO list
         public int VertVBO { get; private set; }
-        public int ColrVBO { get; private set; }
-        //This model's EBO
+        public int ColorVBO { get; private set; }
+
+        // This model's EBO
         public int EBO { get; private set; }
-        //This renderer's shader
+        // This renderer's shader
         public Shader Shader { get; set; } 
+        // This model's MoodelMatrix
+        public Matrix4 ModelMatrix { get; set; }
 
         /// <summary>
         /// When the model gets refreshed
@@ -40,24 +45,24 @@ namespace HypoSharp.Core.Rendering
             EBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, model.Indices.Length * sizeof(uint), model.Indices, BufferUsageHint.StaticDraw);
+            ModelMatrix = Matrix4.Identity;
 
             //Setup the shader 
             Shader = new Shader(@"#version 330 core
-layout (location = 0) in vec3 aPosition;
-out vec3 color;
+layout (location = 0) in vec3 pos;
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 void main()
 {
-    gl_Position = vec4(aPosition, 1.0);
-    color = aPosition;
+    gl_Position = projection * view * model * vec4(pos, 1.0);
 }
 ", @"#version 330 core
 out vec4 FragColor;
-in vec3 color;
-uniform float test;
 
 void main()
 {
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
 }", "DefaultDiffuse");
             Shader.Use();
         }
@@ -69,8 +74,10 @@ void main()
         {
             //Bind the VAO, and make sure to unbind after rendering it
             //Shader.SetMatrix4(Shader.GetAttribLocation("viewMatrix"), camera.ViewMatrix);
-            Shader.SetFloat(Shader.GetAttribLocation("test"), 0.5f);
             Shader.Use();
+            Shader.SetMatrix4(Shader.GetUniformLocation("projection"), camera.ProjectionMatrix);
+            Shader.SetMatrix4(Shader.GetUniformLocation("view"), camera.ViewMatrix);
+            Shader.SetMatrix4(Shader.GetUniformLocation("model"), ModelMatrix);
             GL.BindVertexArray(VAO);
             GL.DrawElements(PrimitiveType.Triangles, model.Indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);

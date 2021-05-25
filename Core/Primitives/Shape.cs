@@ -34,17 +34,17 @@ namespace HypoSharp.Core.Primitives
         /// <summary>
         /// Initialization method
         /// </summary>
-        void IEntity.Initialize(object entity) { }
+        public virtual void Initialize() { }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
-        void IEntity.Loop() { }
+        public virtual void Loop() { }
 
         /// <summary>
         /// Render this object
         /// </summary>
-        void IRenderable.Render(Camera camera)
+        public virtual void Render(Camera camera)
         {
             Renderer.RenderModel(camera);
         }
@@ -52,6 +52,6 @@ namespace HypoSharp.Core.Primitives
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        void IEntity.Dispose() { Renderer.DisposeModel(); }
+        public virtual void Dispose() { Renderer.DisposeModel(); }
     }
 }
