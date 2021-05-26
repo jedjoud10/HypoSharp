@@ -15,6 +15,7 @@ namespace HypoSharp.Core.Rendering
     /// </summary>
     public class DeferredRenderer
     {
+        // Test model
         Model model;
         ModelRenderer renderer;
 
@@ -40,7 +41,7 @@ namespace HypoSharp.Core.Rendering
                 Indices = new uint[] 
                 {
                     0, 1, 2,
-                    2, 3, 0
+                    2, 3, 0,
                 }                
             };
             renderer = new ModelRenderer() { Model = model };

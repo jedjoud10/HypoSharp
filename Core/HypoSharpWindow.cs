@@ -3,6 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using HypoSharp.Core.Input;
 using System;
+using OpenTK.Mathematics;
 
 namespace HypoSharp.Core
 {
@@ -11,6 +12,7 @@ namespace HypoSharp.Core
     /// </summary>
     public class HypoSharpWindow : GameWindow
     {
+        // Our window settings
         public GameWindowSettings WindowSettings { get; private set; }
         public NativeWindowSettings NativeWindowSettings { get; private set; }
 
@@ -20,7 +22,7 @@ namespace HypoSharp.Core
         public HypoSharpWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
             WindowSettings = gameWindowSettings;
-            NativeWindowSettings = nativeWindowSettings;            
+            NativeWindowSettings = nativeWindowSettings;
         }
 
         /// <summary>
@@ -29,8 +31,17 @@ namespace HypoSharp.Core
         protected override void OnLoad()
         {
             // Creation of the world
-            World.InitializeWorld(this);
+            World.InitializeWorld();
             base.OnLoad();
+        }
+
+        /// <summary>
+        /// Right before we call the .Run method
+        /// </summary>
+        public void PreLoad() 
+        {
+            // Right before we call the run method
+            World.PreInitializeWorld(this);
         }
 
         /// <summary>
@@ -39,19 +50,9 @@ namespace HypoSharp.Core
         protected override void OnResize(ResizeEventArgs e)
         {
             // Resize the window
-            //GL.Viewport(0, 0, e.Width, e.Height);
+            GL.Viewport(0, 0, e.Width, e.Height);
             World.ResizeWindow(e.Height, e.Width);
             base.OnResize(e);
-        }
-
-        /// <summary>
-        /// Called each frame when we update the window
-        /// </summary>
-        protected override void OnUpdateFrame(FrameEventArgs args)
-        {
-            // Main game loop            
-            World.UpdateWorld(args.Time);
-            base.OnUpdateFrame(args);
         }
 
         /// <summary>

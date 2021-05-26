@@ -48,21 +48,26 @@ namespace HypoSharp.Core.Rendering
             ModelMatrix = Matrix4.Identity;
 
             //Setup the shader 
-            Shader = new Shader(@"#version 330 core
+            Shader = new Shader(@"
+#version 330 core
 layout (location = 0) in vec3 pos;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+out vec3 vertex;
 void main()
 {
     gl_Position = projection * view * model * vec4(pos, 1.0);
+    vertex = pos;
 }
-", @"#version 330 core
-out vec4 FragColor;
-
+", @"
+#version 330 core
+out vec4 fragColor;
+in vec3 vertex;
 void main()
 {
-    FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
+    float value = fract((floor(vertex.x * 10) + floor(vertex.z * 10)) * 0.5) * 2.0;
+    fragColor = vec4(value, value, value, 1.0);
 }", "DefaultDiffuse");
             Shader.Use();
         }

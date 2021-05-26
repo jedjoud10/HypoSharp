@@ -9,9 +9,7 @@ namespace HypoSharp.Core
     {
         // Main time vars
         // Time between each frames
-        public static float FrameDeltaTime { get; set; }
-        // Time between each update loop
-        public static float UpdateDeltaTime { get; set; }
+        public static float DeltaTime { get; set; }
         // Time (in second) from the start of the game
         public static float TimeSinceGameStart { get; set; }
         // How many tick in a second

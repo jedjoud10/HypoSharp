@@ -28,13 +28,14 @@ namespace HypoSharp.Core
         public static HypoSharpWindow Context { get; private set; }
         // The current deferred renderer
         public static DeferredRenderer DeferredRenderer { get; private set; }
-        // The aspect ratio of the current window
         // Width of the window
         public static int WindowWidth { get; private set; }
         // Height of the height
         public static int WindowHeight { get; private set; }
         // The aspect ratio (Height / Width)
         public static float AspectRatio { get { return (float)WindowHeight / (float)WindowWidth; } }
+        // If the program was close
+        public static bool Closed { get; private set; }
         //Callbacks
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
@@ -43,11 +44,11 @@ namespace HypoSharp.Core
         /// <summary>
         /// Initialize the world for the first time
         /// </summary>
-        public static void InitializeWorld(HypoSharpWindow _context)
+        public static void InitializeWorld()
         {
             Console.WriteLine("World: World started initialization with settings...");
-            Console.WriteLine($"TICK_RATE: {Time.TICK_RATE} \nTARGETTED_FPS: {_context.WindowSettings.RenderFrequency} \nTARGETTED_UPDATE_RATE: {_context.WindowSettings.UpdateFrequency}");
-            Context = _context;
+            Console.WriteLine($"TICK_RATE: {Time.TICK_RATE} \nTARGETTED_FPS: {Context.WindowSettings.RenderFrequency} \nTARGETTED_UPDATE_RATE: {Context.WindowSettings.UpdateFrequency}");
+            
             EntityObjects = new List<IEntity>(); RenderObjects = new List<IRenderable>(); TickableObjects = new List<ITickable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
 
@@ -61,6 +62,18 @@ namespace HypoSharp.Core
             OnInitializeWorld?.Invoke();
             foreach (var currentObject in EntityObjects) currentObject.InitializeAbstract(currentObject);
             Console.WriteLine("World: World finished initialization");
+        }
+
+        /// <summary>
+        /// Right before we call the .Run method
+        /// </summary>
+        public static void PreInitializeWorld(HypoSharpWindow _context)
+        {
+            Context = _context;
+
+            // Setup the pre window stuff
+            //Context.CursorGrabbed = true;
+            Context.VSync = OpenTK.Windowing.Common.VSyncMode.On;
         }
 
         /// <summary>
@@ -88,25 +101,31 @@ namespace HypoSharp.Core
         }
 
         /// <summary>
-        /// This method is ran every frame
+        /// This method is ran when we want to render stuff
         /// </summary>
-        public static void UpdateWorld(double delta)
+        public static void RenderWorld(double delta)
         {
-            //Call the loop method each IGameLogic object
-            Time.UpdateDeltaTime = (float)delta;
-            Time.TimeSinceGameStart += Time.UpdateDeltaTime;
-            Time.TimeSinceLastTick += Time.UpdateDeltaTime;
+            // Call the loop method each IGameLogic object
+            Time.DeltaTime = (float)delta;
+            Time.TimeSinceGameStart += Time.DeltaTime;
+            Time.TimeSinceLastTick += Time.DeltaTime;
 
-            //Update the IEntity objects
+            if (Closed) return;
+
+            // Read input from the keyboard
+            InputManager.OnInputLoop();
+
+            // Update the IEntity objects
             foreach (var entityObject in EntityObjects) entityObject.Loop();
 
-            //Update the ITickable objects
+            // Update the ITickable objects
             if (Time.TimeSinceLastTick > (1f / Time.TICK_RATE))
             {
                 Time.TimeSinceLastTick = 0f;
                 foreach (var tickableObject in TickableObjects) tickableObject.Tick();
             }
-            //Add the queued objects
+
+            // Add the queued objects
             foreach (var addObj in ObjectsToAdd)
             {
                 if (addObj is IEntity)
@@ -121,7 +140,7 @@ namespace HypoSharp.Core
             }
             ObjectsToAdd.Clear();
 
-            //Remove the queued objects
+            // Remove the queued objects
             foreach (var removeObj in ObjectsToRemove)
             {
                 if (removeObj is IEntity)
@@ -136,19 +155,10 @@ namespace HypoSharp.Core
             }
             ObjectsToRemove.Clear();
 
-            Time.Ticks++;
-        }
-
-        /// <summary>
-        /// This method is ran when we want to render stuff
-        /// </summary>
-        public static void RenderWorld(double delta)
-        {
-            Time.FrameDeltaTime = (float)delta;
-            //Render everything
+            // Render everything
             DeferredRenderer.Render(Camera);
-            //Read input from the keyboard
-            InputManager.OnInputLoop();
+
+            Time.Ticks++;
         }
 
         /// <summary>
@@ -156,6 +166,7 @@ namespace HypoSharp.Core
         /// </summary>
         public static void DestroyWorld_AKA_NUKE()
         {
+            Closed = true;
             OnDestroyWorld?.Invoke();
             DeferredRenderer.Dispose();
             foreach (var logicObject in EntityObjects) logicObject.Dispose();

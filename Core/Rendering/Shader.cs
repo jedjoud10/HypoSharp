@@ -1,12 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
 using System.IO;
-using System.Numerics;
 using System.Text;
 using OpenTK.Mathematics;
-using Vector4 = OpenTK.Mathematics.Vector4;
-using Vector3 = OpenTK.Mathematics.Vector3;
-using Vector2 = OpenTK.Mathematics.Vector2;
 
 namespace HypoSharp.Core.Rendering
 {
@@ -62,6 +58,7 @@ namespace HypoSharp.Core.Rendering
             GL.DeleteShader(vertShader);
 
             if (compiledSuccsessfully) Console.WriteLine($"Shaders: Shader {Name} compiled succsessfully");
+            else throw new Exception($"Shader compilation failed for shader {Name}");
         }
 
         /// <summary>

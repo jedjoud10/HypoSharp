@@ -23,6 +23,20 @@ namespace HypoSharp.Debug
         private Vector2 _summedDelta;
 
         /// <summary>
+        /// Initialization method
+        /// </summary>
+        public override void Initialize()
+        {
+            base.Initialize();
+            InputManager.AddKeyMapping("cameraDebugUp", Keys.Space);
+            InputManager.AddKeyMapping("cameraDebugDown", Keys.LeftShift);
+            InputManager.AddKeyMapping("cameraDebugForward", Keys.W);
+            InputManager.AddKeyMapping("cameraDebugBackward", Keys.S);
+            InputManager.AddKeyMapping("cameraDebugLeft", Keys.A);
+            InputManager.AddKeyMapping("cameraDebugRight", Keys.D);
+        }
+
+        /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
         public override void Loop()
@@ -30,37 +44,37 @@ namespace HypoSharp.Debug
             base.Loop();
 
             //Debug camera controls
-            if (InputManager.IsKeyMappingHeld(Keys.Space))
+            if (InputManager.IsKeyMappingHeld("cameraDebugUp"))
             {
                 World.Camera.Transform.Position += Vector3.UnitY * 0.01f;
                 World.Camera.UpdateViewMatrix();
             }
 
-            if (InputManager.IsKeyMappingHeld(Keys.LeftShift))
+            if (InputManager.IsKeyMappingHeld("cameraDebugDown"))
             {
                 World.Camera.Transform.Position -= Vector3.UnitY * 0.01f;
                 World.Camera.UpdateViewMatrix();
             }
 
-            if (InputManager.IsKeyMappingHeld(Keys.W))
+            if (InputManager.IsKeyMappingHeld("cameraDebugForward"))
             {
                 World.Camera.Transform.Position -= Vector3.UnitZ * 0.01f;
                 World.Camera.UpdateViewMatrix();
             }
 
-            if (InputManager.IsKeyMappingHeld(Keys.S))
+            if (InputManager.IsKeyMappingHeld("cameraDebugBackward"))
             {
                 World.Camera.Transform.Position += Vector3.UnitZ * 0.01f;
                 World.Camera.UpdateViewMatrix();
             }
 
-            if (InputManager.IsKeyMappingHeld(Keys.A))
+            if (InputManager.IsKeyMappingHeld("cameraDebugLeft"))
             {
                 World.Camera.Transform.Position -= Vector3.UnitX * 0.01f;
                 World.Camera.UpdateViewMatrix();
             }
 
-            if (InputManager.IsKeyMappingHeld(Keys.D))
+            if (InputManager.IsKeyMappingHeld("cameraDebugRight"))
             {
                 World.Camera.Transform.Position += Vector3.UnitX * 0.01f;
                 World.Camera.UpdateViewMatrix();
