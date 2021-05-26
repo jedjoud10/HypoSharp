@@ -41,6 +41,7 @@ namespace HypoSharp.Core.Input
             ValueToMap = new Dictionary<string, ValueInputMapElement>();
             AddKeyMapping("printFps", Keys.G);
             AddKeyMapping("quit", Keys.Escape);
+            AddKeyMapping("fullscreen", Keys.F1);
         }
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace HypoSharp.Core.Input
             MouseState = World.Context.MouseState;            
             if (IsButtonMappingPressed("printFps")) Console.WriteLine($"FPS: {1f / Time.DeltaTime}");
             if (IsButtonMappingPressed("quit")) World.Context.Close();
+            if (IsButtonMappingPressed("fullscreen")) World.Fullscreen = !World.Fullscreen;
         }
 
         /// <summary>

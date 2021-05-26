@@ -8,19 +8,6 @@ namespace HypoSharp.Core.Primitives
     /// </summary>
     public class Quad : Shape
     {
-        // Main quad vars
-        public Vector2 Size { get; set; }
-
-        /// <summary>
-        /// Quad shape constructor
-        /// </summary>
-        /// <param name="size">Size of the quad</param>
-        public Quad(Vector2 size)
-        {
-            // Set size
-            Size = size;
-        }
-
         /// <summary>
         /// Initialization method
         /// </summary>
@@ -31,16 +18,15 @@ namespace HypoSharp.Core.Primitives
             Model.Vertices = new Vector3[]
             {
                 new Vector3(0, 0, 0),
-                new Vector3(1, 0, 0),
-                new Vector3(1, 0, 1),
-                new Vector3(0, 0, 1),
+                new Vector3(Transform.Scale.X, 0, 0),
+                new Vector3(Transform.Scale.X, 0, Transform.Scale.Z),
+                new Vector3(0, 0, Transform.Scale.Z),
             };
             Model.Indices = new uint[]
             {
                 0, 1, 2,
                 2, 3, 0,
             };
-
             base.Initialize();
         }
     }

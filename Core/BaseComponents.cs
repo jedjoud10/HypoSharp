@@ -41,6 +41,8 @@ namespace HypoSharp.Core
                 OnTransformUpdate?.Invoke();
             }
         }
+        // Current scale of the object
+        public Vector3 Scale { get; set; }
 
         // The Up, Foward, and Left vectors of this transform
         public Vector3 Up { get; set; }

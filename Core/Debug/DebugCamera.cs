@@ -14,7 +14,7 @@ namespace HypoSharp.Debug
     public class DebugCamera : Camera
     {
         // Speed of the camera
-        public float Speed { get; set; } = 1f;
+        public float Speed { get; set; } = 10f;
         // Sensivity ov the camera rotation
         public float Sensivity { get; set; } = 0.1f;
         private Vector2 mouseDelta, rotation;

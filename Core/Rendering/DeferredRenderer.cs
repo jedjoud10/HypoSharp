@@ -26,6 +26,10 @@ namespace HypoSharp.Core.Rendering
             GL.ClearColor(Color.FromArgb(255, 90, 168, 242));
             GL.Enable(EnableCap.DepthTest);
 
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+            GL.FrontFace(FrontFaceDirection.Cw);
+
             Console.WriteLine("Renderer: Renderer finished initialization");
         }
 

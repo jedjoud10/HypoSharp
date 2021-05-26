@@ -50,10 +50,10 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnResize(ResizeEventArgs e)
         {
+            base.OnResize(e);
             // Resize the window
             GL.Viewport(0, 0, Size.X, Size.Y);
             World.ResizeWindow(Size.Y, Size.X);
-            base.OnResize(e);
         }
 
         /// <summary>

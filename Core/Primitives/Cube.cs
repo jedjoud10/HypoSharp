@@ -8,17 +8,6 @@ namespace HypoSharp.Core.Primitives
     /// </summary>
     public class Cube : Shape
     {
-        // Main cube vars
-        public Vector3 Size { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="size"></param>
-        public Cube(Vector3 size)
-        {
-            // Set size
-            Size = size;
-        }
     }
 }

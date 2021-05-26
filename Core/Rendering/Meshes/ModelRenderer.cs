@@ -31,7 +31,7 @@ namespace HypoSharp.Core.Rendering
         /// <param name="transform"></param>
         public void RecalculateModelMatrix(Transform transform) 
         {
-            ModelMatrix = Matrix4.CreateTranslation(transform.Position) * Matrix4.CreateFromQuaternion(transform.Rotation);
+            ModelMatrix = Matrix4.CreateScale(transform.Scale) * Matrix4.CreateTranslation(transform.Position) * Matrix4.CreateFromQuaternion(transform.Rotation);
         }
 
         /// <summary>
@@ -65,8 +65,9 @@ uniform mat4 model;
 out vec3 vertex;
 void main()
 {
-    gl_Position = projection * view * model * vec4(pos, 1.0);
-    vertex = pos;
+    vec4 worldPos = model * vec4(pos, 1.0);
+    gl_Position = projection * view * worldPos;
+    vertex = worldPos.xyz;
 }
 ", @"
 #version 330 core
@@ -75,6 +76,8 @@ in vec3 vertex;
 void main()
 {
     float value = fract((floor(vertex.x * 10) + floor(vertex.z * 10)) * 0.5) * 2.0;
+    float value2 = fract((floor(vertex.x) + floor(vertex.z)) * 0.5) * 2.0;
+    value *= value2;
     fragColor = vec4(value, value, value, 1.0);
 }", "DefaultDiffuse");
             Shader.Use();

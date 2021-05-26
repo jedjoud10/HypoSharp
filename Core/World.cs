@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System;
 using System.Collections.Generic;
+using OpenTK.Windowing.Common;
 
 namespace HypoSharp.Core
 {
@@ -36,6 +37,27 @@ namespace HypoSharp.Core
         public static float AspectRatio { get { return (float)WindowWidth / (float)WindowHeight; } }
         // If the program was close
         public static bool Closed { get; private set; }
+        // Going fullscreen
+        private static bool fullscreen;
+        public static bool Fullscreen { 
+            get { return fullscreen; } 
+            set 
+            { 
+                fullscreen = value;
+                if (fullscreen)
+                {
+                    Context.WindowState = WindowState.Fullscreen;
+                    Context.WindowBorder = WindowBorder.Hidden;
+                    Context.VSync = VSyncMode.On;
+                }
+                else
+                {
+                    Context.WindowState = WindowState.Normal;
+                    Context.WindowBorder = WindowBorder.Resizable;
+                    Context.VSync = VSyncMode.On;
+                }
+            } 
+        }
         //Callbacks
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
@@ -71,7 +93,7 @@ namespace HypoSharp.Core
 
             // Setup the pre window stuff
             Context.CursorGrabbed = true;
-            Context.VSync = OpenTK.Windowing.Common.VSyncMode.On;
+            Context.VSync = VSyncMode.On;
         }
 
         /// <summary>
