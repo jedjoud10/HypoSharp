@@ -27,7 +27,7 @@ namespace HypoSharp.Core.Rendering
             Console.WriteLine("Renderer: Renderer started initialization...");    
             
             // Setup the deferred renderer
-            GL.ClearColor(Color.Black);
+            GL.ClearColor(Color.FromArgb(255, 90, 168, 242));
             GL.Enable(EnableCap.DepthTest);
             // Create a test model
             model = new Model()

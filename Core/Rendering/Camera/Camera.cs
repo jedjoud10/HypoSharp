@@ -17,9 +17,9 @@ namespace HypoSharp.Core.Rendering
 
         // Main camera vars
 
-        // Vertrical Fov
-        private float fov = 0.78f;
-        public float FovY { get { return fov; } set { fov = value; UpdateProjectionMatrix(); } }
+        // Horizontal Fov
+        private float hFov = 90f;
+        public float HorizontalFov { get { return hFov; } set { hFov = value; UpdateProjectionMatrix(); } }
 
         // Aspect ratio (Height / Width)
         public float AspectRatio { get; set; } = 0.75f;
@@ -56,7 +56,10 @@ namespace HypoSharp.Core.Rendering
         /// <summary>
         /// Update the projection matrix when the Fov or the AspectRatio changes
         /// </summary>
-        public void UpdateProjectionMatrix() { ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FovY, AspectRatio, NearClipPlane, FarClipPlane); }
+        public void UpdateProjectionMatrix() 
+        { 
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f * MathF.Atan(MathF.Tan(HorizontalFov / 2.0f) * AspectRatio), AspectRatio, NearClipPlane, FarClipPlane);
+        }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
