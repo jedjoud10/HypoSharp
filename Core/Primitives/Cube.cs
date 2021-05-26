@@ -8,17 +8,17 @@ namespace HypoSharp.Core.Primitives
     /// </summary>
     public class Cube : Shape
     {
-        //Main cube vars
+        // Main cube vars
         public Vector3 Size { get; set; }
 
         /// <summary>
-        /// Cube shape constructor
+        /// 
         /// </summary>
-        /// <param name="position">Position for this cube. Default is (0, 0, 0)</param>
-        /// <param name="rotation">Rotation (Quaternion) for this cube. Default is (0, 0, 0, 0)</param>
-        public Cube(Vector3 position, Quaternion rotation, Vector3 size) : base(position, rotation)
+        /// <param name="size"></param>
+        public Cube(Vector3 size)
         {
-
+            // Set size
+            Size = size;
         }
     }
 }

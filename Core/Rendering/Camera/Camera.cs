@@ -20,6 +20,11 @@ namespace HypoSharp.Core.Rendering
         // Horizontal Fov
         private float hFov = 90f;
         public float HorizontalFov { get { return hFov; } set { hFov = value; UpdateProjectionMatrix(); } }
+        public float VerticalFov 
+        { 
+            get { return 2.0f * MathF.Atan(MathF.Tan(HorizontalFov / 2.0f) * AspectRatio); } 
+            set { HorizontalFov = 2.0f * MathF.Atan(MathF.Tan(value / 2.0f) * (1f/AspectRatio)); }
+        }
 
         // Aspect ratio (Height / Width)
         public float AspectRatio { get; set; } = 0.75f;
@@ -36,6 +41,7 @@ namespace HypoSharp.Core.Rendering
             //Default aspect ratio
             UpdateProjectionMatrix();
             UpdateViewMatrix();
+            OnWindowResize();
             World.OnWindowResize += OnWindowResize;
         }
 
@@ -51,14 +57,14 @@ namespace HypoSharp.Core.Rendering
         /// <summary>
         /// Update the view matrix when the transform changes
         /// </summary>
-        public void UpdateViewMatrix() { ViewMatrix = Matrix4.CreateFromQuaternion(Transform.Rotation) * Matrix4.CreateTranslation(-Transform.Position); }
+        public void UpdateViewMatrix() { ViewMatrix = Matrix4.LookAt(Transform.Position, Transform.Position + Transform.Forward, Transform.Up); }
 
         /// <summary>
         /// Update the projection matrix when the Fov or the AspectRatio changes
         /// </summary>
         public void UpdateProjectionMatrix() 
         { 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f * MathF.Atan(MathF.Tan(HorizontalFov / 2.0f) * AspectRatio), AspectRatio, NearClipPlane, FarClipPlane);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(VerticalFov, AspectRatio, NearClipPlane, FarClipPlane);
         }
 
         /// <summary>

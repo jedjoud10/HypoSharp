@@ -13,14 +13,11 @@ namespace HypoSharp.Debug
     /// </summary>
     public class DebugCamera : Camera
     {
-        // DebugCamera vars
-        public const float defaultSpeed = 50f;
-        public const float defaultSensivity = 0.04f;
-        public float Speed { get; set; }
-        public float Sensivity { get; set; }
-        private Vector2 _mouseDelta;
-        private Vector2 _lastMousePosition;
-        private Vector2 _summedDelta;
+        // Speed of the camera
+        public float Speed { get; set; } = 1f;
+        // Sensivity ov the camera rotation
+        public float Sensivity { get; set; } = 0.1f;
+        private Vector2 mouseDelta, rotation;
 
         /// <summary>
         /// Initialization method
@@ -34,6 +31,10 @@ namespace HypoSharp.Debug
             InputManager.AddKeyMapping("cameraDebugBackward", Keys.S);
             InputManager.AddKeyMapping("cameraDebugLeft", Keys.A);
             InputManager.AddKeyMapping("cameraDebugRight", Keys.D);
+            InputManager.AddValueMapping("mouseDelta", ValueMapping.MOUSE_DELTA);
+            InputManager.AddValueMapping("mousePosition", ValueMapping.MOUSE_POSITION);
+
+            Transform.OnTransformUpdate += () => UpdateViewMatrix();
         }
 
         /// <summary>
@@ -43,42 +44,33 @@ namespace HypoSharp.Debug
         {
             base.Loop();
 
-            //Debug camera controls
-            if (InputManager.IsKeyMappingHeld("cameraDebugUp"))
-            {
-                World.Camera.Transform.Position += Vector3.UnitY * 0.01f;
-                World.Camera.UpdateViewMatrix();
-            }
+            // Read the mouse delta from last frame
+            mouseDelta = (Vector2)InputManager.ReadValueMapping("mouseDelta");
+            // Sum up the mouse delta to get the rotation (As a 2D vector)
+            rotation += mouseDelta * Sensivity;
+            // Clamp the rotation so we can't break our neck
+            rotation.Y = MathHelper.Clamp(rotation.Y, -90, 90);
+            // Apply the camera rotation
+            Transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(rotation.X)) * Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(-rotation.Y));
+            UpdateViewMatrix();
+            // Debug camera controls
+            if (InputManager.IsButtonMappingHeld("cameraDebugUp"))
+                World.Camera.Transform.Position += Transform.Up * Time.DeltaTime * Speed;
 
-            if (InputManager.IsKeyMappingHeld("cameraDebugDown"))
-            {
-                World.Camera.Transform.Position -= Vector3.UnitY * 0.01f;
-                World.Camera.UpdateViewMatrix();
-            }
+            if (InputManager.IsButtonMappingHeld("cameraDebugDown"))
+                World.Camera.Transform.Position -= Transform.Up * Time.DeltaTime * Speed;
 
-            if (InputManager.IsKeyMappingHeld("cameraDebugForward"))
-            {
-                World.Camera.Transform.Position -= Vector3.UnitZ * 0.01f;
-                World.Camera.UpdateViewMatrix();
-            }
+            if (InputManager.IsButtonMappingHeld("cameraDebugForward"))
+                World.Camera.Transform.Position += Transform.Forward * Time.DeltaTime * Speed;
 
-            if (InputManager.IsKeyMappingHeld("cameraDebugBackward"))
-            {
-                World.Camera.Transform.Position += Vector3.UnitZ * 0.01f;
-                World.Camera.UpdateViewMatrix();
-            }
+            if (InputManager.IsButtonMappingHeld("cameraDebugBackward"))
+                World.Camera.Transform.Position -= Transform.Forward * Time.DeltaTime * Speed;
 
-            if (InputManager.IsKeyMappingHeld("cameraDebugLeft"))
-            {
-                World.Camera.Transform.Position -= Vector3.UnitX * 0.01f;
-                World.Camera.UpdateViewMatrix();
-            }
+            if (InputManager.IsButtonMappingHeld("cameraDebugLeft"))
+                World.Camera.Transform.Position -= Transform.Right * Time.DeltaTime * Speed;            
 
-            if (InputManager.IsKeyMappingHeld("cameraDebugRight"))
-            {
-                World.Camera.Transform.Position += Vector3.UnitX * 0.01f;
-                World.Camera.UpdateViewMatrix();
-            }
+            if (InputManager.IsButtonMappingHeld("cameraDebugRight"))
+                World.Camera.Transform.Position += Transform.Right * Time.DeltaTime * Speed;
         }
     }
 }

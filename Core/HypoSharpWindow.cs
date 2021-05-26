@@ -23,6 +23,7 @@ namespace HypoSharp.Core
         {
             WindowSettings = gameWindowSettings;
             NativeWindowSettings = nativeWindowSettings;
+            RenderFrequency = 60;
         }
 
         /// <summary>
@@ -50,8 +51,8 @@ namespace HypoSharp.Core
         protected override void OnResize(ResizeEventArgs e)
         {
             // Resize the window
-            GL.Viewport(0, 0, e.Width, e.Height);
-            World.ResizeWindow(e.Height, e.Width);
+            GL.Viewport(0, 0, Size.X, Size.Y);
+            World.ResizeWindow(Size.Y, Size.X);
             base.OnResize(e);
         }
 
@@ -60,9 +61,21 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+            // Update the Inputs
+            InputManager.OnFrameInputLoop();
+
             // Render the whole world
             World.RenderWorld(args.Time);
             base.OnRenderFrame(args);
+        }
+
+        /// <summary>
+        /// Called an unlimited amount of times per second (Limited by the hardware). Only used for inputs
+        /// </summary>
+        protected override void OnUpdateFrame(FrameEventArgs args)
+        {
+            // Read input from the keyboard
+            InputManager.OnInputLoop();
         }
 
         /// <summary>

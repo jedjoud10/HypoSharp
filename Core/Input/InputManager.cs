@@ -18,14 +18,18 @@ namespace HypoSharp.Core.Input
     /// </summary>
     public static class InputManager
     {
-        // Mappings ([Name, Key/button] --> Map --> Value)
-        internal static Dictionary<string, InputMapElement> KeyToMap { get; private set; }
+        // Key Mappings ([Name, Key/Button] --> Map --> Value)
+        internal static Dictionary<string, ButtonInputMapElement> ButtonToMap { get; private set; }
+        // Value Mappings ([Name, MouseVar/JoystickVar] --> Map --> Value)
+        internal static Dictionary<string, ValueInputMapElement> ValueToMap { get; private set; }
         // The current state of the keyboard
         public static KeyboardState KeyboardState { private get; set; }
-        // The last state of the keyboard
-        public static KeyboardState LastKeyboardState { private get; set; }
         // The current state of the mouse
-        public static MouseState MouseState { get; set; }
+        public static MouseState MouseState { private get; set; }
+        // The position of the mouse last frame
+        public static Vector2 LastMousePosition { get; set; }
+        // The difference of the positions from last frame's mouse position
+        public static Vector2 MouseDelta { get; private set; }
 
         /// <summary>
         /// Constructor
@@ -33,20 +37,31 @@ namespace HypoSharp.Core.Input
         static InputManager()
         {
             // Setup the mappings
-            KeyToMap = new Dictionary<string, InputMapElement>();
+            ButtonToMap = new Dictionary<string, ButtonInputMapElement>();
+            ValueToMap = new Dictionary<string, ValueInputMapElement>();
             AddKeyMapping("printFps", Keys.G);
             AddKeyMapping("quit", Keys.Escape);
         }
 
         /// <summary>
-        /// Called every frame to update the World's keyboard state
+        /// Called during the Update loop
         /// </summary>
         public static void OnInputLoop()
-        {            
+        {
             //Debug FPS
-            if (IsKeyMappingPressed("printFps")) Console.WriteLine($"FPS: {1f / Time.DeltaTime}");
-            if (IsKeyMappingPressed("quit")) World.Context.Close();
-            LastKeyboardState = KeyboardState.GetSnapshot();
+            KeyboardState = World.Context.KeyboardState;
+            MouseState = World.Context.MouseState;            
+            if (IsButtonMappingPressed("printFps")) Console.WriteLine($"FPS: {1f / Time.DeltaTime}");
+            if (IsButtonMappingPressed("quit")) World.Context.Close();
+        }
+
+        /// <summary>
+        /// Called during the Frame loop
+        /// </summary>
+        public static void OnFrameInputLoop() 
+        {
+            MouseDelta = MouseState.Position - LastMousePosition;
+            LastMousePosition = MouseState.Position;
         }
 
         /// <summary>
@@ -56,7 +71,17 @@ namespace HypoSharp.Core.Input
         /// <param name="defaultMouseButton">The default mouse button for this mapping</param>
         public static void AddMouseButtonMapping(string name, MouseButton defaultMouseButton) 
         {
-            KeyToMap.Add(name, new InputMapElement { MappingType = KeyMapping.MOUSE_BUTTON, Mapped = defaultMouseButton });
+            ButtonToMap.Add(name, new ButtonInputMapElement { MappingType = ButtonMapping.MOUSE_BUTTON, Mapped = defaultMouseButton });
+        }
+
+        /// <summary>
+        /// Add a specific value mapping for a specific ValueMapping type
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="mappingType"></param>
+        public static void AddValueMapping(string name, ValueMapping mappingType)
+        {
+            ValueToMap.Add(name, new ValueInputMapElement { MappingType = mappingType });
         }
 
         /// <summary>
@@ -67,45 +92,99 @@ namespace HypoSharp.Core.Input
         public static void AddKeyMapping(string name, Keys defaultKey) 
         {
             Console.WriteLine($"InputManager: Add new key mapping. {name} -> {defaultKey}");
-            KeyToMap.Add(name, new InputMapElement { MappingType = KeyMapping.KEY, Mapped = defaultKey });
+            ButtonToMap.Add(name, new ButtonInputMapElement { MappingType = ButtonMapping.KEY, Mapped = defaultKey });
         }
 
-
+        /// <summary>
+        /// Reads a specified value mapping
+        /// </summary>
+        /// <param name="name">Name of the mapping</param>
+        /// <returns>Object returned, you must cast it by yourself</returns>
+        public static object ReadValueMapping(string name) 
+        {
+            switch (ValueToMap[name].MappingType)
+            {
+                case ValueMapping.MOUSE_POSITION:
+                    return MouseState.Position;
+                case ValueMapping.MOUSE_DELTA:                    
+                    return MouseDelta;
+                default:
+                    return null;
+            }
+        }
 
         /// <summary>
         /// Check if a certain key mapping is pressed 
         /// </summary>
-        /// <returns></returns>
-        public static bool IsKeyMappingPressed(string name) 
+        /// <returns>Is the button pressed in the current frame?</returns>
+        public static bool IsButtonMappingPressed(string name) 
         {
-            Keys key = (Keys)KeyToMap[name].Mapped;
-            return (KeyboardState[key] != LastKeyboardState[key]) && KeyboardState[key];
+            switch (ButtonToMap[name].MappingType)
+            {
+                case ButtonMapping.KEY:
+                    Keys key = (Keys)ButtonToMap[name].Mapped;
+                    return KeyboardState.IsKeyPressed(key);
+                case ButtonMapping.MOUSE_BUTTON:
+                    MouseButton button = (MouseButton)ButtonToMap[name].Mapped;
+                    return MouseState.IsButtonDown(button);
+                default:
+                    return false;
+            }
+            
+            
         }
 
         /// <summary>
-        /// Check if a certain key mapping is held
+        /// Check if a certain button mapping is held
         /// </summary>
-        /// <returns></returns>
-        public static bool IsKeyMappingHeld(string name) 
-        { 
-            return KeyboardState[(Keys)KeyToMap[name].Mapped];
+        /// <returns>Is the button held?</returns>
+        public static bool IsButtonMappingHeld(string name) 
+        {
+            switch (ButtonToMap[name].MappingType)
+            {
+                case ButtonMapping.KEY:
+                    return KeyboardState[(Keys)ButtonToMap[name].Mapped];
+                case ButtonMapping.MOUSE_BUTTON:
+                    return MouseState[(MouseButton)ButtonToMap[name].Mapped];
+                default:
+                    return false;
+            }            
         }
     }
-
-    [System.Serializable]
-    //Each element in the mapping ()
-    internal class InputMapElement 
+    
+    /// <summary>
+    /// Each element in the button mapping dictionary
+    /// </summary>
+    internal class ButtonInputMapElement 
     {
         // The type of mapping we're using
-        public KeyMapping MappingType { get; set; }
+        public ButtonMapping MappingType { get; set; }
         // The button/key this element maps to
         public object Mapped { get; set; }
     }
 
-    [System.Serializable]
-    // The type of key mapping
-    internal enum KeyMapping 
+    /// <summary>
+    /// Each element in the mapping dictionary
+    /// </summary>
+    internal class ValueInputMapElement
     {
-        KEY, MOUSE_BUTTON, MOUSE_DELTA, MOUSE_POSITION
+        // The type of mapping we're using
+        public ValueMapping MappingType { get; set; }
+    }
+
+    /// <summary>
+    /// Each type of key mapping, either a key mapping a mouse button mapping
+    /// </summary>
+    internal enum ButtonMapping 
+    {
+        KEY, MOUSE_BUTTON,
+    }
+
+    /// <summary>
+    /// Each type of value mapping, either mouse mapping or joystick
+    /// </summary>
+    public enum ValueMapping
+    {
+        MOUSE_POSITION, MOUSE_DELTA,
     }
 }

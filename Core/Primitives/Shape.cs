@@ -8,33 +8,24 @@ namespace HypoSharp.Core.Primitives
     /// </summary>
     public abstract class Shape : ITransform, IEntity, IRenderable
     {
-        //ITransform transform
+        // ITransform transform
         public Transform Transform { get; set; }
 
-
-        //Main shape vars
+        // Main shape vars
         public Model Model { get; set; }
         public ModelRenderer Renderer { get; set; }
 
         /// <summary>
-        /// Primitive shape constructor
+        /// Initialization method
         /// </summary>
-        /// <param name="position">Position for this entity. Default is (0, 0, 0)</param>
-        /// <param name="rotation">Rotation (Quaternion) for this entity. Default is (0, 0, 0, 0)</param>
-        public Shape(Vector3 position, Quaternion rotation)
+        public virtual void Initialize() 
         {
-            Transform.Position = position;
-            Transform.Rotation = rotation;
+            Transform.OnTransformUpdate += () => Renderer.RecalculateModelMatrix(Transform);
             Renderer = new ModelRenderer()
             {
                 Model = Model,
             };
         }
-
-        /// <summary>
-        /// Initialization method
-        /// </summary>
-        public virtual void Initialize() { }
 
         /// <summary>
         /// The Loop method is ran every frame, before rendering
@@ -44,10 +35,7 @@ namespace HypoSharp.Core.Primitives
         /// <summary>
         /// Render this object
         /// </summary>
-        public virtual void Render(Camera camera)
-        {
-            Renderer.RenderModel(camera);
-        }
+        public virtual void Render(Camera camera) { Renderer.RenderModel(camera); }
 
         /// <summary>
         /// Called when this object is getting disposed of

@@ -23,7 +23,16 @@ namespace HypoSharp.Core.Rendering
         // This renderer's shader
         public Shader Shader { get; set; } 
         // This model's MoodelMatrix
-        public Matrix4 ModelMatrix { get; set; }
+        public Matrix4 ModelMatrix { get; set; } = Matrix4.Identity;
+
+        /// <summary>
+        /// Recalculates the model matrix from a transform
+        /// </summary>
+        /// <param name="transform"></param>
+        public void RecalculateModelMatrix(Transform transform) 
+        {
+            ModelMatrix = Matrix4.CreateTranslation(transform.Position) * Matrix4.CreateFromQuaternion(transform.Rotation);
+        }
 
         /// <summary>
         /// When the model gets refreshed
@@ -45,8 +54,7 @@ namespace HypoSharp.Core.Rendering
             EBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, model.Indices.Length * sizeof(uint), model.Indices, BufferUsageHint.StaticDraw);
-            ModelMatrix = Matrix4.Identity;
-
+            
             //Setup the shader 
             Shader = new Shader(@"
 #version 330 core

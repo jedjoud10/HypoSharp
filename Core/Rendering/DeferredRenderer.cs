@@ -15,10 +15,6 @@ namespace HypoSharp.Core.Rendering
     /// </summary>
     public class DeferredRenderer
     {
-        // Test model
-        Model model;
-        ModelRenderer renderer;
-
         /// <summary>
         /// Initialize the renderer
         /// </summary>
@@ -29,22 +25,6 @@ namespace HypoSharp.Core.Rendering
             // Setup the deferred renderer
             GL.ClearColor(Color.FromArgb(255, 90, 168, 242));
             GL.Enable(EnableCap.DepthTest);
-            // Create a test model
-            model = new Model()
-            {
-                Vertices = new Vector3[] {
-                    new Vector3(0, 0, 0),
-                    new Vector3(1, 0, 0),
-                    new Vector3(1, 0, 1),
-                    new Vector3(0, 0, 1),
-                },
-                Indices = new uint[] 
-                {
-                    0, 1, 2,
-                    2, 3, 0,
-                }                
-            };
-            renderer = new ModelRenderer() { Model = model };
 
             Console.WriteLine("Renderer: Renderer finished initialization");
         }
@@ -55,9 +35,8 @@ namespace HypoSharp.Core.Rendering
         public void Render(Camera camera)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            renderer.RenderModel(camera);
             // Call the render method each IRenderable object
-            //foreach (var renderableObject in World.RenderObjects) renderableObject.Render();
+            foreach (var renderableObject in World.RenderObjects) renderableObject.Render(camera);
             World.Context.SwapBuffers();
         }
 
@@ -66,7 +45,7 @@ namespace HypoSharp.Core.Rendering
         /// </summary>
         public void Dispose() 
         {
-            renderer.DisposeModel();
+
         }
     }
 }

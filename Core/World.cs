@@ -29,11 +29,11 @@ namespace HypoSharp.Core
         // The current deferred renderer
         public static DeferredRenderer DeferredRenderer { get; private set; }
         // Width of the window
-        public static int WindowWidth { get; private set; }
+        public static int WindowWidth { get { return Context.Size.X; } }
         // Height of the height
-        public static int WindowHeight { get; private set; }
-        // The aspect ratio (Height / Width)
-        public static float AspectRatio { get { return (float)WindowHeight / (float)WindowWidth; } }
+        public static int WindowHeight { get { return Context.Size.Y; } }
+        // The aspect ratio (Width / Height)
+        public static float AspectRatio { get { return (float)WindowWidth / (float)WindowHeight; } }
         // If the program was close
         public static bool Closed { get; private set; }
         //Callbacks
@@ -52,12 +52,10 @@ namespace HypoSharp.Core
             EntityObjects = new List<IEntity>(); RenderObjects = new List<IRenderable>(); TickableObjects = new List<ITickable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
 
-            //Everything essential
+            // Everything essential
             DeferredRenderer = new DeferredRenderer();
             DeferredRenderer.Initialize();
-            InputManager.KeyboardState = Context.KeyboardState;
-            InputManager.LastKeyboardState = Context.KeyboardState;
-            InputManager.MouseState = Context.MouseState;
+
 
             OnInitializeWorld?.Invoke();
             foreach (var currentObject in EntityObjects) currentObject.InitializeAbstract(currentObject);
@@ -72,7 +70,7 @@ namespace HypoSharp.Core
             Context = _context;
 
             // Setup the pre window stuff
-            //Context.CursorGrabbed = true;
+            Context.CursorGrabbed = true;
             Context.VSync = OpenTK.Windowing.Common.VSyncMode.On;
         }
 
@@ -95,7 +93,6 @@ namespace HypoSharp.Core
         /// <param name="width"></param>
         public static void ResizeWindow(int height, int width) 
         { 
-            WindowHeight = height; WindowWidth = width;
             OnWindowResize?.Invoke(); 
             Console.WriteLine($"World: Resize window ---- Height: {height} Width: {width}"); 
         }
@@ -110,10 +107,7 @@ namespace HypoSharp.Core
             Time.TimeSinceGameStart += Time.DeltaTime;
             Time.TimeSinceLastTick += Time.DeltaTime;
 
-            if (Closed) return;
-
-            // Read input from the keyboard
-            InputManager.OnInputLoop();
+            if (Closed) return;            
 
             // Update the IEntity objects
             foreach (var entityObject in EntityObjects) entityObject.Loop();
@@ -158,6 +152,7 @@ namespace HypoSharp.Core
             // Render everything
             DeferredRenderer.Render(Camera);
 
+            // Tick
             Time.Ticks++;
         }
 

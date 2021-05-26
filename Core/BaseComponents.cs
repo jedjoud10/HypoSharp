@@ -24,9 +24,10 @@ namespace HypoSharp.Core
             Rotation = Quaternion.Identity;
         }
 
-        //Current position of the transform
-        public Vector3 Position { get; set; }
-        //Current rotation of the transform
+        // Current position of the transform
+        private Vector3 position;
+        public Vector3 Position { get { return position; } set { position = value; OnTransformUpdate?.Invoke(); } }
+        // Current rotation of the transform
         private Quaternion _rotation;
         public Quaternion Rotation
         { 
@@ -34,16 +35,19 @@ namespace HypoSharp.Core
             set 
             {
                 _rotation = value;
-                Up = Vector3.Transform(Vector3.UnitY, _rotation);
-                Left = Vector3.Transform(Vector3.UnitX, _rotation);
+                Up = Vector3.Transform(-Vector3.UnitY, _rotation);
+                Right = Vector3.Transform(Vector3.UnitX, _rotation);
                 Forward = Vector3.Transform(Vector3.UnitZ, _rotation);
+                OnTransformUpdate?.Invoke();
             }
         }
 
-        //The Up, Foward, and Left vectors of this transform
+        // The Up, Foward, and Left vectors of this transform
         public Vector3 Up { get; set; }
         public Vector3 Forward { get; set; }
-        public Vector3 Left { get; set; }
+        public Vector3 Right { get; set; }
+
+        public event Action OnTransformUpdate;
     }
 
     public interface IEntity
@@ -98,5 +102,5 @@ namespace HypoSharp.Core
         /// Render this object
         /// </summary>
         public void Render(Camera camera);
-    }
+    }    
 }
