@@ -1,10 +1,9 @@
 ﻿using HypoSharp.Core;
-using HypoSharp.Core.Input;
-using HypoSharp.Core.Primitives;
-using HypoSharp.Core.Rendering;
+using HypoSharp.Input;
+using HypoSharp.Rendering;
+using System;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System;
 
 namespace HypoSharp.Debug
 {

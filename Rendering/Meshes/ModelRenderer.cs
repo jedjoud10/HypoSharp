@@ -1,8 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL;
-using OpenTK.Mathematics;
+﻿using HypoSharp.Core;
 using System;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 
-namespace HypoSharp.Core.Rendering
+namespace HypoSharp.Rendering
 {
     /// <summary>
     /// Renders a single model

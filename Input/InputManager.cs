@@ -1,17 +1,10 @@
-﻿using OpenTK.Windowing.Common;
-using OpenTK.Mathematics;
-using OpenTK.Graphics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using OpenTK.Input;
+﻿using HypoSharp.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL;
-using System.Drawing;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace HypoSharp.Core.Input
+namespace HypoSharp.Input
 {
     /// <summary>
     /// Class that manages all inputs from OpenTK, it also maps them using a certain in the user settings file

@@ -1,6 +1,6 @@
-﻿using HypoSharp.Core.Rendering;
-using OpenTK.Mathematics;
+﻿using HypoSharp.Rendering;
 using System;
+using OpenTK.Mathematics;
 
 namespace HypoSharp.Core
 {
@@ -94,7 +94,9 @@ namespace HypoSharp.Core
         /// </summary>
         public void Tick();
     }
-
+}
+namespace HypoSharp.Rendering 
+{
     /// <summary>
     /// Renderable component, tells the renderer that it can render this object
     /// </summary>
@@ -104,5 +106,28 @@ namespace HypoSharp.Core
         /// Render this object
         /// </summary>
         public void Render(Camera camera);
-    }    
+    }
+}
+namespace HypoSharp.Editor 
+{
+    /// <summary>
+    /// Editor component, can get called from inside the editor
+    /// </summary>
+    public interface IEditorEntity
+    {
+        /// <summary>
+        /// Initialization method (The one that you need to implement)
+        /// </summary>
+        public void EditorInitialize();
+
+        /// <summary>
+        /// The Loop method is ran every frame, before rendering
+        /// </summary>
+        public void EditorLoop();
+
+        /// <summary>
+        /// Called when this object is getting disposed of
+        /// </summary>
+        public void EditorDispose();
+    }
 }

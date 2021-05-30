@@ -1,7 +1,5 @@
-﻿using HypoSharp.Core.Rendering;
-using OpenTK.Mathematics;
-
-namespace HypoSharp.Core.Primitives
+﻿
+namespace HypoSharp.Primitives
 {
     /// <summary>
     /// A Cube shape

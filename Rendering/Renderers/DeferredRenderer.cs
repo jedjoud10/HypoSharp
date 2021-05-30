@@ -1,27 +1,21 @@
 ﻿using HypoSharp.Core;
-using HypoSharp.Core.Primitives;
-using HypoSharp.Core.Rendering;
-using OpenTK.Graphics.OpenGL;
-using System.Drawing;
 using System;
-using System.Numerics;
-using HypoSharp.Core.Input;
+using System.Drawing;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace HypoSharp.Core.Rendering
+namespace HypoSharp.Rendering
 {
     /// <summary>
     /// The deferred renderer that renders the whole scene using a specific camera
     /// </summary>
-    public class DeferredRenderer
+    public class DeferredRenderer : BaseRenderer
     {
         /// <summary>
         /// Initialize the renderer
         /// </summary>
-        public void Initialize()
+        public override void Initialize()
         {
-            Console.WriteLine("Renderer: Renderer started initialization...");    
-            
             // Setup the deferred renderer
             GL.ClearColor(Color.FromArgb(255, 90, 168, 242));
             GL.Enable(EnableCap.DepthTest);
@@ -29,14 +23,13 @@ namespace HypoSharp.Core.Rendering
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
             GL.FrontFace(FrontFaceDirection.Cw);
-
-            Console.WriteLine("Renderer: Renderer finished initialization");
+            base.Initialize();
         }
 
         /// <summary>
         /// Renders the scene (Deferred lighting)
         /// </summary>
-        public void Render(Camera camera)
+        public override void Render(Camera camera)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             // Call the render method each IRenderable object
@@ -47,7 +40,7 @@ namespace HypoSharp.Core.Rendering
         /// <summary>
         /// Unload this deferred renderer
         /// </summary>
-        public void Dispose() 
+        public override void Dispose() 
         {
 
         }

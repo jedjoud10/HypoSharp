@@ -1,7 +1,8 @@
-﻿using OpenTK.Mathematics;
-using HypoSharp.Core.Rendering;
+﻿using HypoSharp.Core;
+using HypoSharp.Rendering;
+using OpenTK.Mathematics;
 
-namespace HypoSharp.Core.Primitives
+namespace HypoSharp.Primitives
 {
     /// <summary>
     /// A Primitive shape

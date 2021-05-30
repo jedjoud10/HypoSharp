@@ -1,25 +1,28 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using HypoSharp.Input;
+using System;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using HypoSharp.Core.Input;
-using System;
-using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL;
 
 namespace HypoSharp.Core
 {
     /// <summary>
     /// The main game window
     /// </summary>
-    public class HypoSharpWindow : GameWindow
+    public class Window : GameWindow
     {
         // Our window settings
         public GameWindowSettings WindowSettings { get; private set; }
         public NativeWindowSettings NativeWindowSettings { get; private set; }
+        // The aspect ratio (Width / Height)
+        public float AspectRatio { get { return (float)Size.X / (float)Size.Y; } }
+        // When the window gets resized
+        public static event Action<float> OnWindowResize;
 
         /// <summary>
         /// When we create the window
         /// </summary>
-        public HypoSharpWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
+        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
             WindowSettings = gameWindowSettings;
             NativeWindowSettings = nativeWindowSettings;
@@ -53,7 +56,7 @@ namespace HypoSharp.Core
             base.OnResize(e);
             // Resize the window
             GL.Viewport(0, 0, Size.X, Size.Y);
-            World.ResizeWindow(Size.Y, Size.X);
+            OnWindowResize?.Invoke(AspectRatio);
         }
 
         /// <summary>

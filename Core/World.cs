@@ -1,5 +1,5 @@
-﻿using HypoSharp.Core.Input;
-using HypoSharp.Core.Rendering;
+﻿using HypoSharp.Input;
+using HypoSharp.Rendering;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System;
@@ -26,16 +26,10 @@ namespace HypoSharp.Core
         // All the objects we need to remove next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToRemove { get; set; }
         // Window context
-        public static HypoSharpWindow Context { get; private set; }
+        public static Window Context { get; private set; }
         // The current deferred renderer
         public static DeferredRenderer DeferredRenderer { get; private set; }
-        // Width of the window
-        public static int WindowWidth { get { return Context.Size.X; } }
-        // Height of the height
-        public static int WindowHeight { get { return Context.Size.Y; } }
-        // The aspect ratio (Width / Height)
-        public static float AspectRatio { get { return (float)WindowWidth / (float)WindowHeight; } }
-        // If the program was close
+        // If the program was closed
         public static bool Closed { get; private set; }
         // Going fullscreen
         private static bool fullscreen;
@@ -61,16 +55,12 @@ namespace HypoSharp.Core
         //Callbacks
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
-        public static event Action OnWindowResize;
 
         /// <summary>
         /// Initialize the world for the first time
         /// </summary>
         public static void InitializeWorld()
         {
-            Console.WriteLine("World: World started initialization with settings...");
-            Console.WriteLine($"TICK_RATE: {Time.TICK_RATE} \nTARGETTED_FPS: {Context.WindowSettings.RenderFrequency} \nTARGETTED_UPDATE_RATE: {Context.WindowSettings.UpdateFrequency}");
-            
             EntityObjects = new List<IEntity>(); RenderObjects = new List<IRenderable>(); TickableObjects = new List<ITickable>();
             ObjectsToAdd = new List<object>(); ObjectsToRemove = new List<object>();
 
@@ -81,13 +71,13 @@ namespace HypoSharp.Core
 
             OnInitializeWorld?.Invoke();
             foreach (var currentObject in EntityObjects) currentObject.InitializeAbstract(currentObject);
-            Console.WriteLine("World: World finished initialization");
+            Console.WriteLine("World: World finished initialization.");
         }
 
         /// <summary>
         /// Right before we call the .Run method
         /// </summary>
-        public static void PreInitializeWorld(HypoSharpWindow _context)
+        public static void PreInitializeWorld(Window _context)
         {
             Context = _context;
 
@@ -107,17 +97,6 @@ namespace HypoSharp.Core
         /// </summary>
         /// <param name="obj">The object to remove</param>
         public static void RemoveObject(object obj) { ObjectsToRemove.Add(obj); }
-
-        /// <summary>
-        /// When the OpenTK window gets resized
-        /// </summary>
-        /// <param name="height"></param>
-        /// <param name="width"></param>
-        public static void ResizeWindow(int height, int width) 
-        { 
-            OnWindowResize?.Invoke(); 
-            Console.WriteLine($"World: Resize window ---- Height: {height} Width: {width}"); 
-        }
 
         /// <summary>
         /// This method is ran when we want to render stuff

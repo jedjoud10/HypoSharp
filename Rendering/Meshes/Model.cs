@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace HypoSharp.Core.Rendering
+namespace HypoSharp.Rendering
 {
     /// <summary>
     /// A model that contains 3D information like vertices and UVs 

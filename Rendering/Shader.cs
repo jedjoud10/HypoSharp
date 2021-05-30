@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using OpenTK.Mathematics;
 
-namespace HypoSharp.Core.Rendering
+namespace HypoSharp.Rendering
 {
     /// <summary>
     /// The shader handler that compiles the shaders at runtime
@@ -24,8 +24,6 @@ namespace HypoSharp.Core.Rendering
             // Init shaders variables
             Name = name;
             int vertShader, fragShader;
-
-            Console.WriteLine($"Shaders: Compiling shader {Name}...");
 
             // Generate the shaders
             vertShader = GL.CreateShader(ShaderType.VertexShader);
@@ -57,8 +55,8 @@ namespace HypoSharp.Core.Rendering
             GL.DeleteShader(fragShader);
             GL.DeleteShader(vertShader);
 
-            if (compiledSuccsessfully) Console.WriteLine($"Shaders: Shader {Name} compiled succsessfully");
-            else throw new Exception($"Shader compilation failed for shader {Name}");
+            if (compiledSuccsessfully) Console.WriteLine($"Shaders: Shader {Name} compiled succsessfully.");
+            else throw new Exception($"Shader compilation failed for shader {Name}.");
         }
 
         /// <summary>

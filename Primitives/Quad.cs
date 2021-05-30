@@ -1,7 +1,7 @@
-﻿using HypoSharp.Core.Rendering;
+﻿using HypoSharp.Rendering;
 using OpenTK.Mathematics;
 
-namespace HypoSharp.Core.Primitives
+namespace HypoSharp.Primitives
 {
     /// <summary>
     /// A Quad shape

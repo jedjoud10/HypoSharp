@@ -2,7 +2,7 @@
 using System;
 using OpenTK.Mathematics;
 
-namespace HypoSharp.Core.Rendering
+namespace HypoSharp.Rendering
 {
     /// <summary>
     /// A Camera object
@@ -41,16 +41,16 @@ namespace HypoSharp.Core.Rendering
             //Default aspect ratio
             UpdateProjectionMatrix();
             UpdateViewMatrix();
-            OnWindowResize();
-            World.OnWindowResize += OnWindowResize;
+            OnWindowResize(AspectRatio);
+            Window.OnWindowResize += OnWindowResize;
         }
 
         /// <summary>
         /// When the window gets resized
         /// </summary>
-        public void OnWindowResize() 
+        public void OnWindowResize(float aspectRatio) 
         {
-            AspectRatio = World.AspectRatio;
+            AspectRatio = aspectRatio;
             UpdateProjectionMatrix();
         }
 

@@ -1,6 +1,6 @@
-﻿using System.Numerics;
+﻿using HypoSharp.Core;
 
-namespace HypoSharp.Core.Rendering
+namespace HypoSharp.Rendering
 {
     /// <summary>
     /// A point light used in rendering

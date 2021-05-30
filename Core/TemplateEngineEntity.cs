@@ -1,7 +1,7 @@
-﻿using HypoSharp.Core.Rendering;
-using System.Numerics;
+﻿using HypoSharp.Core;
+using HypoSharp.Rendering;
 
-namespace HypoSharp.Core
+namespace HypoSharp.Templates
 {
     public class TemplateEngineEntity : IEntity, ITransform, IRenderable, ITickable
     {
