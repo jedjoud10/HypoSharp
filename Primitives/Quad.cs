@@ -9,9 +9,9 @@ namespace HypoSharp.Primitives
     public class Quad : Shape
     {
         /// <summary>
-        /// Initialization method
+        /// Initialize the quad's vertices and triangles
         /// </summary>
-        public override void Initialize() 
+        public override void RenderInitialize()
         {
             // Quad
             Model = new Model();
@@ -27,7 +27,7 @@ namespace HypoSharp.Primitives
                 0, 1, 2,
                 2, 3, 0,
             };
-            base.Initialize();
+            base.RenderInitialize();
         }
     }
 }

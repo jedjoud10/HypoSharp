@@ -1,4 +1,6 @@
 ﻿using HypoSharp.Input;
+using HypoSharp.Editor;
+using HypoSharp.Editor.Input;
 using System;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -18,15 +20,55 @@ namespace HypoSharp.Core
         public float AspectRatio { get { return (float)Size.X / (float)Size.Y; } }
         // When the window gets resized
         public static event Action<float> OnWindowResize;
+        // If this is the game engine editor, or the actual game
+        public static bool IsGameEngine { get; private set; }
+        // The singleton of this window
+        public static Window Singleton { get; private set; }
+        // Going fullscreen
+        private bool fullscreen;
+        public bool Fullscreen
+        {
+            get { return fullscreen; }
+            set
+            {
+                fullscreen = value;
+                if (fullscreen)
+                {
+                    WindowState = WindowState.Fullscreen;
+                    WindowBorder = WindowBorder.Hidden;
+                    VSync = VSyncMode.On;
+                }
+                else
+                {
+                    WindowState = WindowState.Normal;
+                    WindowBorder = WindowBorder.Resizable;
+                    VSync = VSyncMode.On;
+                }
+            }
+        }
 
         /// <summary>
         /// When we create the window
         /// </summary>
-        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
+        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, bool isGameEngine) : base(gameWindowSettings, nativeWindowSettings)
         {
             WindowSettings = gameWindowSettings;
             NativeWindowSettings = nativeWindowSettings;
             RenderFrequency = 60;
+            IsGameEngine = isGameEngine;
+            Singleton = this;
+
+            // Setup the pre window stuff
+            if (isGameEngine)
+            {
+                CursorGrabbed = false;
+                VSync = VSyncMode.Off;
+            }
+            else
+            {
+                CursorGrabbed = true;
+                VSync = VSyncMode.On;
+            }
         }
 
         /// <summary>
@@ -35,17 +77,9 @@ namespace HypoSharp.Core
         protected override void OnLoad()
         {
             // Creation of the world
-            World.InitializeWorld();
+            if (IsGameEngine) EditorWorld.InitializeEditor();
+            else World.InitializeWorld();
             base.OnLoad();
-        }
-
-        /// <summary>
-        /// Right before we call the .Run method
-        /// </summary>
-        public void PreLoad() 
-        {
-            // Right before we call the run method
-            World.PreInitializeWorld(this);
         }
 
         /// <summary>
@@ -64,11 +98,18 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            // Update the Inputs
-            InputManager.OnFrameInputLoop();
-
             // Render the whole world
-            World.RenderWorld(args.Time);
+            if (IsGameEngine) 
+            {
+                EditorInputManager.OnFrameInputLoop();
+                EditorWorld.RenderEditor(args.Time);
+            }
+            else
+            {
+                // Update the Inputs
+                InputManager.OnFrameInputLoop();
+                World.RenderWorld(args.Time); 
+            }
             base.OnRenderFrame(args);
         }
 
@@ -77,8 +118,9 @@ namespace HypoSharp.Core
         /// </summary>
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
-            // Read input from the keyboard
-            InputManager.OnInputLoop();
+            // Read input from the keyboard and mouse
+            if (IsGameEngine) EditorInputManager.OnInputLoop();
+            else InputManager.OnInputLoop();
         }
 
         /// <summary>
@@ -87,7 +129,8 @@ namespace HypoSharp.Core
         protected override void OnUnload()
         {
             // Dipose the world
-            World.DestroyWorld_AKA_NUKE();
+            if (IsGameEngine) EditorWorld.DestroyEditor();
+            else World.DestroyWorld_AKA_NUKE();
             base.OnUnload();
         }
     }

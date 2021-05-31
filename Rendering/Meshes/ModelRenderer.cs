@@ -18,7 +18,6 @@ namespace HypoSharp.Rendering
         // This model's VBO list
         public int VertVBO { get; private set; }
         public int ColorVBO { get; private set; }
-
         // This model's EBO
         public int EBO { get; private set; }
         // This renderer's shader

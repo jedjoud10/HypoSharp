@@ -25,33 +25,10 @@ namespace HypoSharp.Core
         private static List<object> ObjectsToAdd { get; set; }
         // All the objects we need to remove next frame, could be IGameLogic or IRenderable objects
         private static List<object> ObjectsToRemove { get; set; }
-        // Window context
-        public static Window Context { get; private set; }
         // The current deferred renderer
-        public static DeferredRenderer DeferredRenderer { get; private set; }
+        public static BaseRenderer DeferredRenderer { get; private set; }
         // If the program was closed
         public static bool Closed { get; private set; }
-        // Going fullscreen
-        private static bool fullscreen;
-        public static bool Fullscreen { 
-            get { return fullscreen; } 
-            set 
-            { 
-                fullscreen = value;
-                if (fullscreen)
-                {
-                    Context.WindowState = WindowState.Fullscreen;
-                    Context.WindowBorder = WindowBorder.Hidden;
-                    Context.VSync = VSyncMode.On;
-                }
-                else
-                {
-                    Context.WindowState = WindowState.Normal;
-                    Context.WindowBorder = WindowBorder.Resizable;
-                    Context.VSync = VSyncMode.On;
-                }
-            } 
-        }
         //Callbacks
         public static event Action OnInitializeWorld;
         public static event Action OnDestroyWorld;
@@ -68,22 +45,10 @@ namespace HypoSharp.Core
             DeferredRenderer = new DeferredRenderer();
             DeferredRenderer.Initialize();
 
-
             OnInitializeWorld?.Invoke();
-            foreach (var currentObject in EntityObjects) currentObject.InitializeAbstract(currentObject);
+            // Add the objects that the user put
+            AddQueuedObjects();
             Console.WriteLine("World: World finished initialization.");
-        }
-
-        /// <summary>
-        /// Right before we call the .Run method
-        /// </summary>
-        public static void PreInitializeWorld(Window _context)
-        {
-            Context = _context;
-
-            // Setup the pre window stuff
-            Context.CursorGrabbed = true;
-            Context.VSync = VSyncMode.On;
         }
 
         /// <summary>
@@ -103,7 +68,6 @@ namespace HypoSharp.Core
         /// </summary>
         public static void RenderWorld(double delta)
         {
-            // Call the loop method each IGameLogic object
             Time.DeltaTime = (float)delta;
             Time.TimeSinceGameStart += Time.DeltaTime;
             Time.TimeSinceLastTick += Time.DeltaTime;
@@ -120,41 +84,67 @@ namespace HypoSharp.Core
                 foreach (var tickableObject in TickableObjects) tickableObject.Tick();
             }
 
+            // Add / Remove pending objects
+            AddQueuedObjects();
+            RemoveQueuedObjects();
+
+            // Render everything
+            DeferredRenderer.Render(Camera, RenderObjects);
+
+            // Tick
+            Time.Ticks++;
+        }
+
+        /// <summary>
+        /// Add the objects from the queued list to the actual world and sort them
+        /// </summary>
+        private static void AddQueuedObjects() 
+        {
             // Add the queued objects
             foreach (var addObj in ObjectsToAdd)
             {
+                // Add the object as an IEntity
                 if (addObj is IEntity)
                 {
                     ((IEntity)addObj).InitializeAbstract(addObj);
-                    EntityObjects.Add(addObj as IEntity);
+                    EntityObjects.Add((IEntity)addObj);
                 }
-                if (addObj is IRenderable) RenderObjects.Add((IRenderable)addObj);
+                // Add the object as an IRenderable
+                if (addObj is IRenderable) 
+                {
+                    ((IRenderable)addObj).RenderInitialize();
+                    RenderObjects.Add((IRenderable)addObj);
+                }
+                // Add the object as an ITickable
                 if (addObj is ITickable) TickableObjects.Add((ITickable)addObj);
 
                 Console.WriteLine($"World: Added object {addObj}");
             }
             ObjectsToAdd.Clear();
+        }
 
+        /// <summary>
+        /// Remove the queued objects from the world
+        /// </summary>
+        private static void RemoveQueuedObjects() 
+        {
             // Remove the queued objects
             foreach (var removeObj in ObjectsToRemove)
             {
+                // Remove the object if it's an IEntity
                 if (removeObj is IEntity)
                 {
                     IEntity castObj = ((IEntity)removeObj);
                     castObj.Dispose();
                     EntityObjects.Remove(castObj);
                 }
+                // Remove the object if it's an IRenderable
                 if (removeObj is IRenderable) RenderObjects.Remove((IRenderable)removeObj);
+                // Remove the object if it's an ITickable
                 if (removeObj is ITickable) TickableObjects.Remove((ITickable)removeObj);
                 Console.WriteLine($"World: Removed object {removeObj}");
             }
             ObjectsToRemove.Clear();
-
-            // Render everything
-            DeferredRenderer.Render(Camera);
-
-            // Tick
-            Time.Ticks++;
         }
 
         /// <summary>

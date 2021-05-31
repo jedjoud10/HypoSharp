@@ -42,12 +42,12 @@ namespace HypoSharp.Input
         /// </summary>
         public static void OnInputLoop()
         {
-            //Debug FPS
-            KeyboardState = World.Context.KeyboardState;
-            MouseState = World.Context.MouseState;            
+            KeyboardState = Core.Window.Singleton.KeyboardState;
+            MouseState = Core.Window.Singleton.MouseState;
+            //Debug controls
             if (IsButtonMappingPressed("printFps")) Console.WriteLine($"FPS: {1f / Time.DeltaTime}");
-            if (IsButtonMappingPressed("quit")) World.Context.Close();
-            if (IsButtonMappingPressed("fullscreen")) World.Fullscreen = !World.Fullscreen;
+            if (IsButtonMappingPressed("quit")) Core.Window.Singleton.Close();
+            if (IsButtonMappingPressed("fullscreen")) Core.Window.Singleton.Fullscreen = !Core.Window.Singleton.Fullscreen;
         }
 
         /// <summary>

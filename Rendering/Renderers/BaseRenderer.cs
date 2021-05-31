@@ -1,5 +1,6 @@
 ﻿using HypoSharp.Core;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -22,7 +23,7 @@ namespace HypoSharp.Rendering
         /// <summary>
         /// Renders the scene, abstract though so the renderer class needs to implement this
         /// </summary>
-        public abstract void Render(Camera camera);
+        public abstract void Render(Camera camera, List<IRenderable> renderables);
 
         /// <summary>
         /// Unload the renderer

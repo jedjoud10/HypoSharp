@@ -15,6 +15,11 @@ namespace HypoSharp.Templates
         public virtual void Initialize() { }
 
         /// <summary>
+        /// Initialize anything render related to this object
+        /// </summary>
+        public virtual void RenderInitialize() { }
+
+        /// <summary>
         /// The Loop method is ran every frame, before rendering
         /// </summary>
         public virtual void Loop() { }
@@ -34,5 +39,10 @@ namespace HypoSharp.Templates
         /// Called when this object is getting disposed of
         /// </summary>
         public virtual void Dispose() { }
+
+        /// <summary>
+        /// Dipose of anything related to this object
+        /// </summary>
+        public virtual void RenderDispose() { }
     }
 }

@@ -22,6 +22,13 @@ namespace HypoSharp.Primitives
         public virtual void Initialize() 
         {
             Transform.OnTransformUpdate += () => Renderer.RecalculateModelMatrix(Transform);
+        }
+
+        /// <summary>
+        /// Initialize anything render related to this object
+        /// </summary>
+        public virtual void RenderInitialize()
+        {
             Renderer = new ModelRenderer()
             {
                 Model = Model,
@@ -41,6 +48,12 @@ namespace HypoSharp.Primitives
         /// <summary>
         /// Called when this object is getting disposed of
         /// </summary>
-        public virtual void Dispose() { Renderer.DisposeModel(); }
+        public virtual void Dispose() { }
+
+        /// <summary>
+        /// Dipose of anything related to this object
+        /// </summary>
+        public virtual void RenderDispose() { Renderer.DisposeModel(); }
+
     }
 }

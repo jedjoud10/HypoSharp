@@ -103,9 +103,19 @@ namespace HypoSharp.Rendering
     public interface IRenderable
     {
         /// <summary>
+        /// Initialize anything render related to this object
+        /// </summary>
+        public void RenderInitialize();
+
+        /// <summary>
         /// Render this object
         /// </summary>
         public void Render(Camera camera);
+
+        /// <summary>
+        /// Dipose of anything render related to this object
+        /// </summary>
+        public void RenderDispose();
     }
 }
 namespace HypoSharp.Editor 

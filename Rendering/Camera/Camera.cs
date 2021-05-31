@@ -39,19 +39,18 @@ namespace HypoSharp.Rendering
         public virtual void Initialize() 
         {
             //Default aspect ratio
-            UpdateProjectionMatrix();
             UpdateViewMatrix();
-            OnWindowResize(AspectRatio);
             Window.OnWindowResize += OnWindowResize;
         }
 
         /// <summary>
         /// When the window gets resized
         /// </summary>
-        public void OnWindowResize(float aspectRatio) 
+        private void OnWindowResize(float aspectRatio) 
         {
             AspectRatio = aspectRatio;
             UpdateProjectionMatrix();
+            Console.WriteLine("Camera: Update Projection Matrix");
         }
 
         /// <summary>

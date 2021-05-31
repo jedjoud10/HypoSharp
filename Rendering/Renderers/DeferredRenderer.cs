@@ -1,5 +1,6 @@
 ﻿using HypoSharp.Core;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -29,12 +30,12 @@ namespace HypoSharp.Rendering
         /// <summary>
         /// Renders the scene (Deferred lighting)
         /// </summary>
-        public override void Render(Camera camera)
+        public override void Render(Camera camera, List<IRenderable> renderables)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             // Call the render method each IRenderable object
-            foreach (var renderableObject in World.RenderObjects) renderableObject.Render(camera);
-            World.Context.SwapBuffers();
+            foreach (var renderableObject in renderables) renderableObject.Render(camera);
+            Core.Window.Singleton.Context.SwapBuffers();
         }
 
         /// <summary>

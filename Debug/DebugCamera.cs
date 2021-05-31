@@ -54,22 +54,22 @@ namespace HypoSharp.Debug
             UpdateViewMatrix();
             // Debug camera controls
             if (InputManager.IsButtonMappingHeld("cameraDebugUp"))
-                World.Camera.Transform.Position += Transform.Up * Time.DeltaTime * Speed;
+                Transform.Position += Transform.Up * Time.DeltaTime * Speed;
 
             if (InputManager.IsButtonMappingHeld("cameraDebugDown"))
-                World.Camera.Transform.Position -= Transform.Up * Time.DeltaTime * Speed;
+                Transform.Position -= Transform.Up * Time.DeltaTime * Speed;
 
             if (InputManager.IsButtonMappingHeld("cameraDebugForward"))
-                World.Camera.Transform.Position += Transform.Forward * Time.DeltaTime * Speed;
+                Transform.Position += Transform.Forward * Time.DeltaTime * Speed;
 
             if (InputManager.IsButtonMappingHeld("cameraDebugBackward"))
-                World.Camera.Transform.Position -= Transform.Forward * Time.DeltaTime * Speed;
+                Transform.Position -= Transform.Forward * Time.DeltaTime * Speed;
 
             if (InputManager.IsButtonMappingHeld("cameraDebugLeft"))
-                World.Camera.Transform.Position -= Transform.Right * Time.DeltaTime * Speed;            
+                Transform.Position -= Transform.Right * Time.DeltaTime * Speed;            
 
             if (InputManager.IsButtonMappingHeld("cameraDebugRight"))
-                World.Camera.Transform.Position += Transform.Right * Time.DeltaTime * Speed;
+                Transform.Position += Transform.Right * Time.DeltaTime * Speed;
         }
     }
 }
